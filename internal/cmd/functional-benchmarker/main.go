@@ -23,22 +23,22 @@ func main() {
 
 	options := config.InitOptions(logger)
 
-	options.CollectorConfig = config.ReadConfig(options.CollectorConfigPath, options.BaseLine, logger)
+	options.CollectorConfig = config.ReadConfig(logger, options.CollectorConfigPath, options.BaseLine)
 	logger.V(1).Info(options.CollectorConfig)
 
-	artifactDir := createArtifactDir(options.ArtifactDir, logger)
+	artifactDir := createArtifactDir(logger, options.ArtifactDir)
 
-	metrics, statistics, err := RunBenchmark(artifactDir, options, logger)
+	metrics, statistics, err := RunBenchmark(logger, artifactDir, options)
 	if err != nil {
 		logger.Error(err, "Error in run")
 		os.Exit(1)
 	}
 
-	reporter := reports.NewReporter(options, artifactDir, metrics, statistics)
+	reporter := reports.NewReporter(logger, options, artifactDir, metrics, statistics)
 	reporter.Generate()
 }
 
-func RunBenchmark(artifactDir string, options config.Options, logger logr.Logger) (*stats.ResourceMetrics, *stats.Statistics, error) {
+func RunBenchmark(logger logr.Logger, artifactDir string, options config.Options) (*stats.ResourceMetrics, *stats.Statistics, error) {
 	runDuration := config.MustParseDuration(options.RunDuration, "run-duration", logger)
 	sampleDuration := config.MustParseDuration(options.SampleDuration, "resource-sample-duration", logger)
 	runner := runners.NewRunner(options)
@@ -94,7 +94,7 @@ func gatherStatistics(runner runners.Runner, sample bool, msgSize int, startTime
 	return stats.NewStatisics(logs, msgSize, endTime.Sub(startTime)), raw
 }
 
-func createArtifactDir(artifactDir string, logger logr.Logger) string {
+func createArtifactDir(logger logr.Logger, artifactDir string) string {
 	if strings.TrimSpace(artifactDir) == "" {
 		artifactDir = fmt.Sprintf("./benchmark-%s", time.Now().Format(time.RFC3339Nano))
 	}

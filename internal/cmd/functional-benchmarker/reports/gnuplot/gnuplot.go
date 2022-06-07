@@ -2,6 +2,7 @@ package gnuplot
 
 import (
 	"fmt"
+	"github.com/go-logr/logr"
 	htmllib "html"
 	"io"
 	"io/ioutil"
@@ -12,26 +13,25 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/ViaQ/logerr/v2/log"
 	"github.com/openshift/cluster-logging-operator/internal/cmd/functional-benchmarker/config"
 	"github.com/openshift/cluster-logging-operator/internal/cmd/functional-benchmarker/stats"
 )
 
 type GNUPlotReporter struct {
+	Logger      logr.Logger
 	Options     config.Options
 	Metrics     stats.ResourceMetrics
 	Stats       stats.Statistics
 	ArtifactDir string
 }
 
-func exportResourceMetricTo(outDir string, rm stats.ResourceMetrics) {
-	exportCPU(outDir, rm.Samples)
-	exportMemory(outDir, rm.Samples)
+func exportResourceMetricTo(logger logr.Logger, outDir string, rm stats.ResourceMetrics) {
+	exportCPU(logger, outDir, rm.Samples)
+	exportMemory(logger, outDir, rm.Samples)
 }
 
 /* #nosec G306*/
-func exportLatency(outDir string, logs stats.PerfLogs) {
-	logger := log.NewLogger("")
+func exportLatency(logger logr.Logger, outDir string, logs stats.PerfLogs) {
 	logger.V(3).Info("Exporting latency")
 	buffer := []string{}
 	for i, log := range logs {
@@ -46,8 +46,7 @@ func exportLatency(outDir string, logs stats.PerfLogs) {
 }
 
 /* #nosec G306*/
-func exportMemory(outDir string, samples []stats.Sample) {
-	logger := log.NewLogger("")
+func exportMemory(logger logr.Logger, outDir string, samples []stats.Sample) {
 	logger.V(3).Info("Exporting memory", "samples", samples)
 	buffer := []string{}
 	for _, sample := range samples {
@@ -62,8 +61,7 @@ func exportMemory(outDir string, samples []stats.Sample) {
 }
 
 /* #nosec G306*/
-func exportCPU(outDir string, samples []stats.Sample) {
-	logger := log.NewLogger("")
+func exportCPU(logger logr.Logger, outDir string, samples []stats.Sample) {
 	logger.V(3).Info("Exporting cpu", "samples", samples)
 	buffer := []string{}
 	for _, sample := range samples {
@@ -78,20 +76,19 @@ func exportCPU(outDir string, samples []stats.Sample) {
 }
 
 func (r *GNUPlotReporter) Generate() {
-	exportResourceMetricTo(r.ArtifactDir, r.Metrics)
-	exportLatency(r.ArtifactDir, r.Stats.Logs)
+	exportResourceMetricTo(r.Logger, r.ArtifactDir, r.Metrics)
+	exportLatency(r.Logger, r.ArtifactDir, r.Stats.Logs)
 	for _, plot := range []string{memPlotPNG, cpuPlotPNG, latencyPlotPNG} {
-		plotData(plot, r.ArtifactDir, nil)
+		plotData(r.Logger, plot, r.ArtifactDir, nil)
 	}
 	for _, plot := range []string{memPlotDumb, cpuPlotDumb, latencyPlotDumb} {
-		plotData(plot, r.ArtifactDir, os.Stdout)
+		plotData(r.Logger, plot, r.ArtifactDir, os.Stdout)
 	}
 	r.generateStats()
 }
 
-func plotData(plot, dir string, writer io.Writer) {
+func plotData(logger logr.Logger, plot, dir string, writer io.Writer) {
 	plot = strings.Join(strings.Split(plot, "\n"), ";")
-	logger := log.NewLogger("")
 	logger.V(3).Info("running gnuplot", "cmd", plot)
 	cmd := exec.Command("gnuplot", "-e", plot)
 	cmd.Dir = dir
@@ -153,7 +150,7 @@ func (r *GNUPlotReporter) generateStats() {
 		)
 		err := ioutil.WriteFile(path.Join(r.ArtifactDir, file), []byte(out), 0755)
 		if err != nil {
-			log.NewLogger("").Error(err, "Error writing file")
+			r.Logger.Error(err, "Error writing file")
 		}
 	}
 	writeStatsToConsole(s)

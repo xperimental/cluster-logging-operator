@@ -79,7 +79,7 @@ func InitOptions(logger logr.Logger) Options {
 	return options
 }
 
-func ReadConfig(configFile string, baseline bool, logger logr.Logger) string {
+func ReadConfig(logger logr.Logger, configFile string, baseline bool) string {
 	if baseline {
 		logger.V(0).Info("Using the baseline config")
 		return FluentdBaselineConf
