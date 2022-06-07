@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ViaQ/logerr/v2/kverrors"
+	"github.com/go-logr/logr"
 	"net/url"
 
 	logging "github.com/openshift/cluster-logging-operator/apis/logging/v1"
@@ -25,13 +26,15 @@ var (
 )
 
 type ConfigGenerator struct {
+	logger logr.Logger
 	g      generator.Generator
-	conf   func(clspec *logging.ClusterLoggingSpec, secrets map[string]*corev1.Secret, clfspec *logging.ClusterLogForwarderSpec, op generator.Options) []generator.Section
+	conf   func(logger logr.Logger, clspec *logging.ClusterLoggingSpec, secrets map[string]*corev1.Secret, clfspec *logging.ClusterLogForwarderSpec, op generator.Options) []generator.Section
 	format func(conf string) string
 }
 
-func New(collectorType logging.LogCollectionType) (*ConfigGenerator, error) {
+func New(logger logr.Logger, collectorType logging.LogCollectionType) (*ConfigGenerator, error) {
 	g := &ConfigGenerator{
+		logger: logger,
 		format: func(conf string) string { return conf },
 	}
 	switch collectorType {
@@ -48,7 +51,7 @@ func New(collectorType logging.LogCollectionType) (*ConfigGenerator, error) {
 }
 
 func (cg *ConfigGenerator) GenerateConf(clspec *logging.ClusterLoggingSpec, secrets map[string]*corev1.Secret, clfspec *logging.ClusterLogForwarderSpec, op generator.Options) (string, error) {
-	sections := cg.conf(clspec, secrets, clfspec, op)
+	sections := cg.conf(cg.logger, clspec, secrets, clfspec, op)
 	conf, err := cg.g.GenerateConf(generator.MergeSections(sections)...)
 	return cg.format(conf), err
 }

@@ -59,7 +59,7 @@ func main() {
 
 	logger.Info("Finished reading yaml", "content", string(content))
 
-	generatedConfig, err := forwarder.Generate(logCollectorType, string(content), *includeDefaultLogStore, *debugOutput, nil)
+	generatedConfig, err := forwarder.Generate(logger, logCollectorType, string(content), *includeDefaultLogStore, *debugOutput, nil)
 	if err != nil {
 		logger.Error(err, "Unable to generate log configuration")
 		os.Exit(1)

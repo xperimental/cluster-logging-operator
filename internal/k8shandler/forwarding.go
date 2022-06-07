@@ -71,7 +71,7 @@ func (clusterRequest *ClusterLoggingRequest) generateCollectorConfig() (config s
 	}
 
 	var collectorType = clusterRequest.Cluster.Spec.Collection.Logs.Type
-	g, err := forwardergenerator.New(collectorType)
+	g, err := forwardergenerator.New(clusterRequest.Log, collectorType)
 	if err != nil {
 		clusterRequest.Log.Error(err, "Unable to create forwarder")
 	}

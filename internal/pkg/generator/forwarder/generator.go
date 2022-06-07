@@ -2,6 +2,7 @@ package forwarder
 
 import (
 	"fmt"
+	"github.com/go-logr/logr"
 
 	forwardergenerator "github.com/openshift/cluster-logging-operator/internal/generator/forwarder"
 	"github.com/openshift/cluster-logging-operator/internal/generator/helpers"
@@ -31,10 +32,7 @@ func UnMarshalClusterLogForwarder(clfYaml string) (forwarder *logging.ClusterLog
 	return forwarder, err
 }
 
-func Generate(collectionType logging.LogCollectionType, clfYaml string, includeDefaultLogStore, debugOutput bool, client *client.Client) (string, error) {
-
-	logger := log.NewLogger("k8sHandler")
-	var err error
+func Generate(logger logr.Logger, collectionType logging.LogCollectionType, clfYaml string, includeDefaultLogStore, debugOutput bool, client *client.Client) (string, error) {
 	forwarder, err := UnMarshalClusterLogForwarder(clfYaml)
 	if err != nil {
 		return "", fmt.Errorf("Error Unmarshalling %q: %v", clfYaml, err)
@@ -77,7 +75,7 @@ func Generate(collectionType logging.LogCollectionType, clfYaml string, includeD
 	if debugOutput {
 		op[helpers.EnableDebugOutput] = ""
 	}
-	configGenerator, err := forwardergenerator.New(collectionType)
+	configGenerator, err := forwardergenerator.New(logger, collectionType)
 	if err != nil {
 		return "", err
 	}

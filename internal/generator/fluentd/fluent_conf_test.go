@@ -1,6 +1,7 @@
 package fluentd
 
 import (
+	"github.com/ViaQ/logerr/v2/log"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
@@ -16,6 +17,7 @@ import (
 
 var _ = Describe("Generating fluentd config", func() {
 	var (
+		logger     = log.NewLogger("fluentd-test")
 		forwarder  *logging.ClusterLogForwarderSpec
 		g          generator.Generator
 		op         generator.Options
@@ -185,7 +187,7 @@ var _ = Describe("Generating fluentd config", func() {
 				Data: secretData,
 			},
 		}
-		c := generator.MergeSections(Conf(nil, secrets, forwarder, op))
+		c := generator.MergeSections(Conf(logger, nil, secrets, forwarder, op))
 		results, err := g.GenerateConf(c...)
 		Expect(err).To(BeNil())
 
@@ -993,7 +995,7 @@ var _ = Describe("Generating fluentd config", func() {
 				Data: secretData,
 			},
 		}
-		c := generator.MergeSections(Conf(nil, secrets, forwarder, op))
+		c := generator.MergeSections(Conf(logger, nil, secrets, forwarder, op))
 		results, err := g.GenerateConf(c...)
 		Expect(err).To(BeNil())
 		Expect(results).To(EqualTrimLines(`
@@ -1785,7 +1787,7 @@ var _ = Describe("Generating fluentd config", func() {
 				Data: secretData,
 			},
 		}
-		c := generator.MergeSections(Conf(nil, secrets, forwarder, op))
+		c := generator.MergeSections(Conf(logger, nil, secrets, forwarder, op))
 		results, err := g.GenerateConf(c...)
 		Expect(err).To(BeNil())
 		Expect(results).To(EqualTrimLines(`
@@ -2522,7 +2524,7 @@ var _ = Describe("Generating fluentd config", func() {
 				},
 			},
 		}
-		c := generator.MergeSections(Conf(nil, nil, forwarder, op))
+		c := generator.MergeSections(Conf(logger, nil, nil, forwarder, op))
 		results, err := g.GenerateConf(c...)
 		Expect(err).To(BeNil())
 		Expect(results).To(EqualTrimLines(`
@@ -2982,7 +2984,7 @@ var _ = Describe("Generating fluentd config", func() {
 	})
 
 	It("should produce well formed fluent.conf", func() {
-		c := generator.MergeSections(Conf(nil, secrets, forwarder, op))
+		c := generator.MergeSections(Conf(logger, nil, secrets, forwarder, op))
 		results, err := g.GenerateConf(c...)
 		Expect(err).To(BeNil())
 		Expect(results).To(EqualTrimLines(`
@@ -4116,7 +4118,7 @@ var _ = Describe("Generating fluentd config", func() {
 			var spec logging.ClusterLogForwarderSpec
 			Expect(yaml.Unmarshal([]byte(yamlSpec), &spec)).To(Succeed())
 			g := generator.MakeGenerator()
-			s := Conf(nil, security.NoSecrets, &spec, generator.NoOptions)
+			s := Conf(logger, nil, security.NoSecrets, &spec, generator.NoOptions)
 			gotFluentdConf, err := g.GenerateConf(generator.MergeSections(s)...)
 			Expect(err).To(Succeed())
 			Expect(gotFluentdConf).To(EqualTrimLines(wantFluentdConf))

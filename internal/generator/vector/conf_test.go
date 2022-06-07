@@ -3,6 +3,7 @@ package vector
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ViaQ/logerr/v2/log"
 	testhelpers "github.com/openshift/cluster-logging-operator/test/helpers"
 	"strings"
 
@@ -19,12 +20,13 @@ import (
 
 //TODO: Use a detailed CLF spec
 var _ = Describe("Testing Complete Config Generation", func() {
+	var logger = log.NewLogger("vector-test")
 	var f = func(testcase testhelpers.ConfGenerateTest) {
 		g := generator.MakeGenerator()
 		if testcase.Options == nil {
 			testcase.Options = generator.Options{}
 		}
-		e := generator.MergeSections(Conf(&testcase.CLSpec, testcase.Secrets, &testcase.CLFSpec, testcase.Options))
+		e := generator.MergeSections(Conf(logger, &testcase.CLSpec, testcase.Secrets, &testcase.CLFSpec, testcase.Options))
 		conf, err := g.GenerateConf(e...)
 		Expect(err).To(BeNil())
 		diff := cmp.Diff(

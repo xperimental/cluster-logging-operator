@@ -2,6 +2,7 @@ package functional
 
 import (
 	"fmt"
+	"github.com/go-logr/logr"
 	"os"
 	"regexp"
 	"strconv"
@@ -59,6 +60,7 @@ type CollectorFunctionalFramework struct {
 	receiverBuilders  []receiverBuilder
 	closeClient       func()
 
+	logger    logr.Logger
 	collector CollectorFramework
 	//VisitConfig allows the framework to modify the config after generating from logforwardering
 	VisitConfig func(string) string
@@ -102,6 +104,7 @@ func NewCollectorFunctionalFrameworkUsing(t *client.Test, fnClose func(), verbos
 
 	testName := "functional"
 	framework := &CollectorFunctionalFramework{
+		logger:    logger,
 		Name:      testName,
 		Namespace: t.NS.Name,
 		image:     collectorImpl.Image(),
@@ -167,7 +170,7 @@ func (f *CollectorFunctionalFramework) DeployWithVisitors(visitors []runtime.Pod
 	debugOutput := false
 	testClient := client.Get().ControllerRuntimeClient()
 	if strings.TrimSpace(f.Conf) == "" {
-		if f.Conf, err = forwarder.Generate(logging.LogCollectionType(f.collector.String()), string(clfYaml), false, debugOutput, &testClient); err != nil {
+		if f.Conf, err = forwarder.Generate(f.logger, logging.LogCollectionType(f.collector.String()), string(clfYaml), false, debugOutput, &testClient); err != nil {
 			return err
 		}
 		//remove journal for now since we can not mimic it

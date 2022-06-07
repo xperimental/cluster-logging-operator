@@ -1,7 +1,7 @@
 package vector
 
 import (
-	"github.com/ViaQ/logerr/v2/log"
+	"github.com/go-logr/logr"
 	logging "github.com/openshift/cluster-logging-operator/apis/logging/v1"
 	"github.com/openshift/cluster-logging-operator/internal/constants"
 	"github.com/openshift/cluster-logging-operator/internal/generator"
@@ -23,11 +23,9 @@ func OutputFromPipelines(spec *logging.ClusterLogForwarderSpec, op generator.Opt
 	return r
 }
 
-func Outputs(clspec *logging.ClusterLoggingSpec, secrets map[string]*corev1.Secret, clfspec *logging.ClusterLogForwarderSpec, op generator.Options) []generator.Element {
+func Outputs(logger logr.Logger, clspec *logging.ClusterLoggingSpec, secrets map[string]*corev1.Secret, clfspec *logging.ClusterLogForwarderSpec, op generator.Options) []generator.Element {
 	outputs := []generator.Element{}
 	ofp := OutputFromPipelines(clfspec, op)
-
-	logger := log.NewLogger("")
 
 	for _, o := range clfspec.Outputs {
 		var secret *corev1.Secret
