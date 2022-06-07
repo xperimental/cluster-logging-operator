@@ -7,7 +7,6 @@ import (
 	"runtime"
 	"strconv"
 
-	"github.com/go-logr/logr"
 	loggingv1 "github.com/openshift/cluster-logging-operator/apis/logging/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
@@ -72,18 +71,19 @@ func main() {
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
 	flag.Parse()
-	logLevel, present := os.LookupEnv("LOG_LEVEL")
-	var logger logr.Logger
-	if present {
-		verbosity, err := strconv.Atoi(logLevel)
+
+	logOptions := []log.Option{}
+	if rawVerbosity, ok := os.LookupEnv("LOG_LEVEL"); ok {
+		verbosity, err := strconv.Atoi(rawVerbosity)
 		if err != nil {
 			log.NewLogger("cluster-logging-operator").Error(err, "LOG_LEVEL must be an integer")
 			os.Exit(1)
 		}
-		logger = log.NewLogger("cluster-logging-operator", log.WithVerbosity(verbosity))
-	} else {
-		logger = log.NewLogger("cluster-logging-operator")
+
+		logOptions = append(logOptions, log.WithVerbosity(verbosity))
 	}
+	logger := log.NewLogger("cluster-logging-operator", logOptions...)
+
 	logger.Info("starting up...",
 		"operator_version", version.Version,
 		"go_version", runtime.Version(),
