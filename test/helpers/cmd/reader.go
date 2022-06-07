@@ -9,10 +9,8 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/openshift/cluster-logging-operator/test/runtime"
-
-	"github.com/ViaQ/logerr/v2/log"
 	"github.com/openshift/cluster-logging-operator/test"
+	"github.com/openshift/cluster-logging-operator/test/runtime"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -104,7 +102,6 @@ func TailReader(pod *corev1.Pod, path string) (*Reader, error) {
 // and will wait for it to be re-created if it is deleted.
 // It will continue to tail until Close() is called.
 func TailReaderForContainer(pod *corev1.Pod, containerName, path string) (*Reader, error) {
-	log.NewLogger("").V(3).Info("Creating tail reader", "pod", pod.Name, "container", containerName, "file", path)
 	return NewReader(runtime.ExecContainer(pod, containerName, "tail", "-F", path))
 }
 
