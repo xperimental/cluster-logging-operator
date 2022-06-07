@@ -6,12 +6,14 @@ import (
 	apps "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 
+	"github.com/ViaQ/logerr/v2/log"
 	"github.com/openshift/cluster-logging-operator/internal/utils/comparators/daemonsets"
 )
 
 var _ = Describe("daemonset#AreSame", func() {
 
 	var (
+		logger           = log.NewLogger("daemonsets-test")
 		current, desired *apps.DaemonSet
 	)
 
@@ -39,12 +41,12 @@ var _ = Describe("daemonset#AreSame", func() {
 		It("should recognize the numbers are different", func() {
 			container := v1.Container{}
 			desired.Spec.Template.Spec.Containers = append(desired.Spec.Template.Spec.Containers, container)
-			Expect(daemonsets.AreSame(current, desired)).To(BeFalse())
+			Expect(daemonsets.AreSame(logger, current, desired)).To(BeFalse())
 		})
 
 		It("should recognize different images", func() {
 			desired.Spec.Template.Spec.Containers[0].Image = "bar"
-			Expect(daemonsets.AreSame(current, desired)).To(BeFalse())
+			Expect(daemonsets.AreSame(logger, current, desired)).To(BeFalse())
 		})
 	})
 
@@ -53,12 +55,12 @@ var _ = Describe("daemonset#AreSame", func() {
 		It("should recognize the numbers are different", func() {
 			container := v1.Container{}
 			desired.Spec.Template.Spec.InitContainers = append(desired.Spec.Template.Spec.InitContainers, container)
-			Expect(daemonsets.AreSame(current, desired)).To(BeFalse())
+			Expect(daemonsets.AreSame(logger, current, desired)).To(BeFalse())
 		})
 
 		It("should recognize different images", func() {
 			desired.Spec.Template.Spec.InitContainers[0].Image = "bar"
-			Expect(daemonsets.AreSame(current, desired)).To(BeFalse())
+			Expect(daemonsets.AreSame(logger, current, desired)).To(BeFalse())
 		})
 	})
 

@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"context"
+	"github.com/ViaQ/logerr/v2/log"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
@@ -11,6 +12,7 @@ import (
 
 var _ = Describe("ReconcileDashboards", func() {
 	var (
+		logger     = log.NewLogger("metrics-test")
 		fakeClient client.Client
 
 		GetDashboard = func() *corev1.ConfigMap {
@@ -40,7 +42,7 @@ var _ = Describe("ReconcileDashboards", func() {
 			setup(nil)
 		})
 		It("should create a new dashboard configmap", func() {
-			Expect(ReconcileDashboards(fakeClient, fakeClient)).To(Succeed())
+			Expect(ReconcileDashboards(logger, fakeClient, fakeClient)).To(Succeed())
 			Expect(GetDashboard()).To(Equal(exp))
 		})
 	})
@@ -51,13 +53,13 @@ var _ = Describe("ReconcileDashboards", func() {
 			initial := newDashboardConfigMap()
 			initial.Labels[DashboardHashName] = "abc"
 			setup(initial)
-			Expect(ReconcileDashboards(fakeClient, fakeClient)).To(Succeed())
+			Expect(ReconcileDashboards(logger, fakeClient, fakeClient)).To(Succeed())
 			Expect(GetDashboard()).To(Equal(exp), "Exp the configmap to be updated")
 		})
 
 		It("should do nothing to the configmap when the dashboard is the same", func() {
 			setup(initial)
-			Expect(ReconcileDashboards(fakeClient, fakeClient)).To(Succeed())
+			Expect(ReconcileDashboards(logger, fakeClient, fakeClient)).To(Succeed())
 			Expect(GetDashboard()).To(Equal(exp))
 		})
 	})

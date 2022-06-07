@@ -1,6 +1,7 @@
 package configmaps_test
 
 import (
+	"github.com/ViaQ/logerr/v2/log"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/openshift/cluster-logging-operator/internal/utils/comparators/configmaps"
@@ -11,6 +12,7 @@ import (
 var _ = Describe("configmaps#AreSame", func() {
 
 	var (
+		logger           = log.NewLogger("configmaps-test")
 		current, desired *v1.ConfigMap
 	)
 
@@ -27,11 +29,11 @@ var _ = Describe("configmaps#AreSame", func() {
 
 	Context("when no comparison options are provided", func() {
 		It("should recognize when they are the same", func() {
-			Expect(configmaps.AreSame(current, desired)).To(BeTrue())
+			Expect(configmaps.AreSame(logger, current, desired)).To(BeTrue())
 		})
 		It("should recognize when only the data is different", func() {
 			current.Data["xyz"] = "abc"
-			Expect(configmaps.AreSame(current, desired)).To(BeFalse())
+			Expect(configmaps.AreSame(logger, current, desired)).To(BeFalse())
 		})
 	})
 	Context("when optionally comparing labels and annotations", func() {
@@ -40,15 +42,15 @@ var _ = Describe("configmaps#AreSame", func() {
 			desired = current.DeepCopy()
 		})
 		It("should recognize when they are the same", func() {
-			Expect(configmaps.AreSame(current, desired, configmaps.CompareLabels, configmaps.CompareAnnotations)).To(BeTrue())
+			Expect(configmaps.AreSame(logger, current, desired, configmaps.CompareLabels, configmaps.CompareAnnotations)).To(BeTrue())
 		})
 		It("should recognize when the labels are different", func() {
 			current.Labels["foo"] = "abc"
-			Expect(configmaps.AreSame(current, desired, configmaps.CompareLabels, configmaps.CompareAnnotations)).To(BeFalse())
+			Expect(configmaps.AreSame(logger, current, desired, configmaps.CompareLabels, configmaps.CompareAnnotations)).To(BeFalse())
 		})
 		It("should recognize when the annotations are different", func() {
 			current.Annotations["foo"] = "abc"
-			Expect(configmaps.AreSame(current, desired, configmaps.CompareLabels, configmaps.CompareAnnotations)).To(BeFalse())
+			Expect(configmaps.AreSame(logger, current, desired, configmaps.CompareLabels, configmaps.CompareAnnotations)).To(BeFalse())
 		})
 	})
 })

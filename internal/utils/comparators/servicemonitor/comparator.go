@@ -1,16 +1,15 @@
 package servicemonitor
 
 import (
+	"github.com/go-logr/logr"
 	"reflect"
 
-	"github.com/ViaQ/logerr/v2/log"
 	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
 	"github.com/openshift/cluster-logging-operator/internal/utils"
 )
 
 //AreSame compares for equality and return true equal otherwise false
-func AreSame(current *monitoringv1.ServiceMonitor, desired *monitoringv1.ServiceMonitor) bool {
-	logger := log.NewLogger("")
+func AreSame(logger logr.Logger, current *monitoringv1.ServiceMonitor, desired *monitoringv1.ServiceMonitor) bool {
 	logger.V(3).Info("Comparing Services current to desired", "current", current, "desired", desired)
 
 	if !utils.AreMapsSame(current.ObjectMeta.Annotations, desired.ObjectMeta.Annotations) {

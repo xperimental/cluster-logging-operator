@@ -1,10 +1,10 @@
 package utils
 
 import (
-	"errors"
 	"reflect"
 
-	"github.com/ViaQ/logerr/v2/log"
+	"github.com/ViaQ/logerr/v2/kverrors"
+	"github.com/go-logr/logr"
 	apps "k8s.io/api/apps/v1"
 	batch "k8s.io/api/batch/v1"
 	v1 "k8s.io/api/core/v1"
@@ -34,19 +34,16 @@ func CompareResources(current, desired v1.ResourceRequirements) (bool, v1.Resour
 	return changed, desired
 }
 
-func AreResourcesDifferent(current, desired interface{}) bool {
-
+func AreResourcesDifferent(logger logr.Logger, current, desired interface{}) bool {
 	var currentContainers []v1.Container
 	var desiredContainers []v1.Container
 
 	currentType := reflect.TypeOf(current)
 	desiredType := reflect.TypeOf(desired)
 
-	logger := log.NewLogger("")
-
 	if currentType != desiredType {
-		logger.Error(errors.New("Attempting to compare resources for different types"), "",
-			"current", currentType, "desired", desiredType)
+		logger.Error(kverrors.New("Resources have different type",
+			"current", currentType, "desired", desiredType), "Comparison failed")
 		return false
 	}
 

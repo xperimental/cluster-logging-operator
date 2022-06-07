@@ -1,9 +1,9 @@
 package configmaps
 
 import (
+	"github.com/go-logr/logr"
 	"reflect"
 
-	"github.com/ViaQ/logerr/v2/log"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -16,11 +16,9 @@ const (
 
 //AreSame compares configmaps for equality and return true equal otherwise false.  This comparison
 //only compares the data of the configmap by default unless otherwise configured
-func AreSame(actual *corev1.ConfigMap, desired *corev1.ConfigMap, options ...ComparisonOption) bool {
-	logger := log.NewLogger("")
-	logger.V(5).Info("Compare configmaps", "actual", actual)
-	logger.V(5).Info("Compare configmaps", "desired", desired)
-	logger.V(5).Info("Compare configmaps", "options", options)
+func AreSame(logger logr.Logger, actual *corev1.ConfigMap, desired *corev1.ConfigMap, options ...ComparisonOption) bool {
+	logger.V(5).Info("Compare configmaps",
+		"actual", actual, "desired", desired, "options", options)
 	dataAreEqual := reflect.DeepEqual(actual.Data, desired.Data)
 	labelsAreEqual := true
 	annotationsAreEqual := true

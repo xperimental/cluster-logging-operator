@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"github.com/go-logr/logr"
 	"path"
 
 	"github.com/ViaQ/logerr/v2/log"
@@ -39,9 +40,9 @@ func newDashboardConfigMap() *corev1.ConfigMap {
 	return cm
 }
 
-func ReconcileDashboards(writer client.Writer, reader client.Reader) (err error) {
+func ReconcileDashboards(logger logr.Logger, writer client.Writer, reader client.Reader) (err error) {
 	cm := newDashboardConfigMap()
-	if err := reconcile.ReconcileConfigmap(writer, reader, cm, configmaps.CompareLabels); err != nil {
+	if err := reconcile.ReconcileConfigmap(logger, writer, reader, cm, configmaps.CompareLabels); err != nil {
 		return err
 	}
 

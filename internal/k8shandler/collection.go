@@ -232,7 +232,7 @@ func (clusterRequest *ClusterLoggingRequest) reconcileCollectorService() error {
 				}
 				return fmt.Errorf("Failed to get %q service for %q: %v", current.Name, clusterRequest.Cluster.Name, err)
 			}
-			if services.AreSame(current, desired) {
+			if services.AreSame(clusterRequest.Log, current, desired) {
 				clusterRequest.Log.V(3).Info("Services are the same skipping update")
 				return nil
 			}
@@ -305,7 +305,7 @@ func (clusterRequest *ClusterLoggingRequest) reconcileCollectorServiceMonitor() 
 				}
 				return fmt.Errorf("Failed to get %q service for %q: %v", current.Name, clusterRequest.Cluster.Name, err)
 			}
-			if servicemonitor.AreSame(current, desired) {
+			if servicemonitor.AreSame(clusterRequest.Log, current, desired) {
 				clusterRequest.Log.V(3).Info("ServiceMonitor are the same skipping update")
 				return nil
 			}
@@ -451,7 +451,7 @@ func (clusterRequest *ClusterLoggingRequest) reconcileCollectorDaemonset(collect
 		}
 		return nil
 	}
-	if daemonsets.AreSame(current, desired) {
+	if daemonsets.AreSame(clusterRequest.Log, current, desired) {
 		return nil
 	}
 	//With this PR: https://github.com/kubernetes-sigs/controller-runtime/pull/919

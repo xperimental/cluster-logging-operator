@@ -1,6 +1,7 @@
 package services_test
 
 import (
+	"github.com/ViaQ/logerr/v2/log"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	v1 "k8s.io/api/core/v1"
@@ -12,6 +13,7 @@ import (
 var _ = Describe("services#AreSame", func() {
 
 	var (
+		logger           = log.NewLogger("services-test")
 		current, desired *v1.Service
 	)
 
@@ -31,38 +33,38 @@ var _ = Describe("services#AreSame", func() {
 
 	Context("when evaluating labels", func() {
 		It("should recognize they are the same", func() {
-			Expect(AreSame(current, desired)).To(BeTrue())
+			Expect(AreSame(logger, current, desired)).To(BeTrue())
 		})
 
 		It("should recognize they are different", func() {
 			desired.Labels["foo"] = "bar"
-			Expect(AreSame(current, desired)).To(BeFalse())
+			Expect(AreSame(logger, current, desired)).To(BeFalse())
 		})
 	})
 	Context("when evaluating selectors", func() {
 		It("should recognize they are the same", func() {
-			Expect(AreSame(current, desired)).To(BeTrue())
+			Expect(AreSame(logger, current, desired)).To(BeTrue())
 		})
 
 		It("should recognize they are different", func() {
 			desired.Spec.Selector["foo"] = "bar"
-			Expect(AreSame(current, desired)).To(BeFalse())
+			Expect(AreSame(logger, current, desired)).To(BeFalse())
 		})
 	})
 	Context("when evaluating ServicePorts", func() {
 		It("should recognize they are the same", func() {
-			Expect(AreSame(current, desired)).To(BeTrue())
+			Expect(AreSame(logger, current, desired)).To(BeTrue())
 		})
 
 		It("should recognize they are different lengths", func() {
 			desired.Spec.Ports = append(desired.Spec.Ports, v1.ServicePort{})
-			Expect(AreSame(current, desired)).To(BeFalse())
+			Expect(AreSame(logger, current, desired)).To(BeFalse())
 		})
 
 		It("should recognize they are different content", func() {
 			current.Spec.Ports = append(desired.Spec.Ports, v1.ServicePort{Name: "bar", Port: 1051})
 			desired.Spec.Ports = append(desired.Spec.Ports, v1.ServicePort{Name: "bar", Port: 1050})
-			Expect(AreSame(current, desired)).To(BeFalse())
+			Expect(AreSame(logger, current, desired)).To(BeFalse())
 		})
 	})
 })

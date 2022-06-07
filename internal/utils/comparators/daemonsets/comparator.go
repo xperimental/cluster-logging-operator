@@ -1,16 +1,15 @@
 package daemonsets
 
 import (
+	"github.com/go-logr/logr"
 	"reflect"
 
-	"github.com/ViaQ/logerr/v2/log"
 	"github.com/openshift/cluster-logging-operator/internal/utils"
 	apps "k8s.io/api/apps/v1"
 )
 
 //AreSame compares daemonset for equality and return true equal otherwise false
-func AreSame(current *apps.DaemonSet, desired *apps.DaemonSet) bool {
-	logger := log.NewLogger("")
+func AreSame(logger logr.Logger, current *apps.DaemonSet, desired *apps.DaemonSet) bool {
 	if !utils.AreMapsSame(current.Spec.Template.Spec.NodeSelector, desired.Spec.Template.Spec.NodeSelector) {
 		logger.V(3).Info("DaemonSet nodeSelector change", "DaemonSetName", current.Name)
 		return false
@@ -36,7 +35,7 @@ func AreSame(current *apps.DaemonSet, desired *apps.DaemonSet) bool {
 		return false
 	}
 
-	if utils.AreResourcesDifferent(current, desired) {
+	if utils.AreResourcesDifferent(logger, current, desired) {
 		logger.V(3).Info("DaemonSet resource(s) change", "DaemonSetName", current.Name)
 		return false
 	}
