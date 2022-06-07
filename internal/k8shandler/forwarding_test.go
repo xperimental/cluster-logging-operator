@@ -60,7 +60,7 @@ var _ = Describe("Normalizing forwarder", func() {
 		output      logging.OutputSpec
 		otherOutput logging.OutputSpec
 		request     *ClusterLoggingRequest
-		logger      logr.Logger
+		logger      = log.NewLogger("k8shandler-forwarding-test")
 	)
 	BeforeEach(func() {
 		output = logging.OutputSpec{
@@ -73,7 +73,6 @@ var _ = Describe("Normalizing forwarder", func() {
 			Type: "elasticsearch",
 			URL:  "http://there",
 		}
-		logger = log.NewLogger("")
 		request = &ClusterLoggingRequest{
 			Log:    logger,
 			Client: fake.NewFakeClient(), //nolint
@@ -797,10 +796,9 @@ var _ = DescribeTable("#generateCollectorConfig",
 )
 
 var _ = DescribeTable("Normalizing round trip of valid YAML specs",
-
 	func(yamlSpec string) {
 		request := ClusterLoggingRequest{
-			Log:    log.NewLogger(""),
+			Log:    log.NewLogger("k8shandler-forwarding-test"),
 			Client: fake.NewFakeClient(), //nolint
 			Cluster: &logging.ClusterLogging{
 				ObjectMeta: metav1.ObjectMeta{

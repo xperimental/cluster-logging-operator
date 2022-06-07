@@ -2,6 +2,7 @@ package k8shandler
 
 import (
 	"fmt"
+	"github.com/ViaQ/logerr/v2/kverrors"
 	"reflect"
 	"sync"
 
@@ -25,7 +26,7 @@ const (
 	maximumElasticsearchMasterCount = int32(3)
 )
 
-func (clusterRequest *ClusterLoggingRequest) CreateOrUpdateLogStore() (err error) {
+func (clusterRequest *ClusterLoggingRequest) CreateOrUpdateLogStore() error {
 	if clusterRequest.Cluster.Spec.LogStore == nil || clusterRequest.Cluster.Spec.LogStore.Type == "" {
 		return nil
 	}
@@ -33,12 +34,11 @@ func (clusterRequest *ClusterLoggingRequest) CreateOrUpdateLogStore() (err error
 
 		cluster := clusterRequest.Cluster
 
-		if err = clusterRequest.removeElasticsearchIfSecretOwnedByCLO(); err != nil {
-			log.NewLogger("").Error(err, "Can't fully clean up old secret created by CLO")
-			return err
+		if err := clusterRequest.removeElasticsearchIfSecretOwnedByCLO(); err != nil {
+			return kverrors.Wrap(err, "Can't fully clean up old secret created by CLO")
 		}
 
-		if err = clusterRequest.createOrUpdateElasticsearchCR(); err != nil {
+		if err := clusterRequest.createOrUpdateElasticsearchCR(); err != nil {
 			return err
 		}
 

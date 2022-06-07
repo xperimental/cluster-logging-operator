@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/ViaQ/logerr/v2/log"
-	"github.com/go-logr/logr"
 	"github.com/openshift/cluster-logging-operator/internal/collector/common"
 	"github.com/openshift/cluster-logging-operator/internal/utils"
 
@@ -71,7 +70,7 @@ var _ = Describe("Reconciling", func() {
 
 	Describe("Collection", func() {
 		var (
-			logger         logr.Logger
+			logger         = log.NewLogger("k8shandler-collection-test")
 			client         client.Client
 			clusterRequest *ClusterLoggingRequest
 		)
@@ -114,7 +113,6 @@ var _ = Describe("Reconciling", func() {
 					fluentdSecret,
 					fluentdCABundle,
 				)
-				logger = log.NewLogger("")
 				clusterRequest = &ClusterLoggingRequest{
 					Log:     logger,
 					Client:  client,
@@ -175,7 +173,6 @@ var _ = Describe("Reconciling", func() {
 					fluentdSecret,
 					fluentdCABundle,
 				)
-				logger = log.NewLogger("")
 				clusterRequest = &ClusterLoggingRequest{
 					Log:     logger,
 					Client:  client,

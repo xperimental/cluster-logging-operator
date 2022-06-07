@@ -148,7 +148,7 @@ func (clusterRequest *ClusterLoggingRequest) NormalizeForwarder() (*logging.Clus
 
 	clusterRequest.verifyInputs(spec, status)
 	if !status.Inputs.IsAllReady() {
-		log.NewLogger("").V(3).Info("Input not Ready", "inputs", status.Inputs)
+		clusterRequest.Log.V(3).Info("Input not Ready", "inputs", status.Inputs)
 	}
 	clusterRequest.verifyOutputs(spec, status)
 	if !status.Outputs.IsAllReady() {

@@ -33,7 +33,7 @@ This is a private key.
 		})
 
 	clusterLoggingRequest := &ClusterLoggingRequest{
-		Log:    log.NewLogger(""),
+		Log:    log.NewLogger("k8shandler-secret-test"),
 		Client: fake.NewFakeClient(), //nolint
 		Cluster: &logging.ClusterLogging{
 			ObjectMeta: v1.ObjectMeta{
@@ -99,7 +99,7 @@ This is a private key.
 		})
 
 	clusterLoggingRequest := &ClusterLoggingRequest{
-		Log:    log.NewLogger(""),
+		Log:    log.NewLogger("k8shandler-secret-test"),
 		Client: fake.NewFakeClient(), //nolint
 		Cluster: &logging.ClusterLogging{
 			ObjectMeta: v1.ObjectMeta{
@@ -175,7 +175,7 @@ This is a private key.
 		})
 
 	clusterLoggingRequest := &ClusterLoggingRequest{
-		Log:    log.NewLogger(""),
+		Log:    log.NewLogger("k8shandler-secret-test"),
 		Client: fake.NewFakeClient(), //nolint
 		Cluster: &logging.ClusterLogging{
 			ObjectMeta: v1.ObjectMeta{
@@ -243,7 +243,7 @@ This is a private key.
 		})
 
 	clusterLoggingRequest := &ClusterLoggingRequest{
-		Log:    log.NewLogger(""),
+		Log:    log.NewLogger("k8shandler-secret-test"),
 		Client: fake.NewFakeClient(), //nolint
 		Cluster: &logging.ClusterLogging{
 			ObjectMeta: v1.ObjectMeta{
