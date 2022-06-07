@@ -101,10 +101,9 @@ func main() {
 	logger.Info("Registering Components.")
 
 	if err = (&clusterlogging.ReconcileClusterLogging{
-		Log:    logger,
-		Client: mgr.GetClient(),
-		Reader: mgr.GetAPIReader(),
-		//Log:    ctrl.Log.WithName("controllers").WithName("ClusterLogForwarder"),
+		Log:      logger,
+		Client:   mgr.GetClient(),
+		Reader:   mgr.GetAPIReader(),
 		Scheme:   mgr.GetScheme(),
 		Recorder: mgr.GetEventRecorderFor("clusterlogging-controller"),
 	}).SetupWithManager(mgr); err != nil {
@@ -113,9 +112,8 @@ func main() {
 		os.Exit(1)
 	}
 	if err = (&forwarding.ReconcileForwarder{
-		Log:    logger,
-		Client: mgr.GetClient(),
-		//Log:    ctrl.Log.WithName("controllers").WithName("ClusterLogging"),
+		Log:      logger,
+		Client:   mgr.GetClient(),
 		Scheme:   mgr.GetScheme(),
 		Recorder: mgr.GetEventRecorderFor("clusterlogforwarder"),
 	}).SetupWithManager(mgr); err != nil {
