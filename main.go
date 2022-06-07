@@ -3,15 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	loggingv1 "github.com/openshift/cluster-logging-operator/apis/logging/v1"
+	"github.com/openshift/cluster-logging-operator/internal/utils"
 	"os"
 	"runtime"
-	"strconv"
-
-	loggingv1 "github.com/openshift/cluster-logging-operator/apis/logging/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 
-	"github.com/ViaQ/logerr/v2/log"
 	"github.com/openshift/cluster-logging-operator/apis"
 	"github.com/openshift/cluster-logging-operator/version"
 	apiruntime "k8s.io/apimachinery/pkg/runtime"
@@ -72,18 +70,7 @@ func main() {
 			"Enabling this will ensure there is only one active controller manager.")
 	flag.Parse()
 
-	logOptions := []log.Option{}
-	if rawVerbosity, ok := os.LookupEnv("LOG_LEVEL"); ok {
-		verbosity, err := strconv.Atoi(rawVerbosity)
-		if err != nil {
-			log.NewLogger("cluster-logging-operator").Error(err, "LOG_LEVEL must be an integer")
-			os.Exit(1)
-		}
-
-		logOptions = append(logOptions, log.WithVerbosity(verbosity))
-	}
-	logger := log.NewLogger("cluster-logging-operator", logOptions...)
-
+	logger := utils.InitLogger("cluster-logging-operator")
 	logger.Info("starting up...",
 		"operator_version", version.Version,
 		"go_version", runtime.Version(),
