@@ -71,9 +71,12 @@ func (clusterRequest *ClusterLoggingRequest) generateCollectorConfig() (config s
 	}
 
 	var collectorType = clusterRequest.Cluster.Spec.Collection.Logs.Type
-	g := forwardergenerator.New(collectorType)
-	err = g.Verify(&clusterRequest.Cluster.Spec, clusterRequest.OutputSecrets, &clusterRequest.ForwarderSpec, op)
+	g, err := forwardergenerator.New(collectorType)
 	if err != nil {
+		clusterRequest.Log.Error(err, "Unable to create forwarder")
+	}
+
+	if err := g.Verify(&clusterRequest.Cluster.Spec, clusterRequest.OutputSecrets, &clusterRequest.ForwarderSpec, op); err != nil {
 		clusterRequest.Log.Error(err, "Unable to generate log configuration")
 		if updateError := clusterRequest.UpdateCondition(
 			logging.CollectorDeadEnd,
@@ -87,7 +90,6 @@ func (clusterRequest *ClusterLoggingRequest) generateCollectorConfig() (config s
 	}
 
 	generatedConfig, err := g.GenerateConf(&clusterRequest.Cluster.Spec, clusterRequest.OutputSecrets, &clusterRequest.ForwarderSpec, op)
-
 	if err != nil {
 		clusterRequest.Log.Error(err, "Unable to generate log configuration")
 		if updateError := clusterRequest.UpdateCondition(

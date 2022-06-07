@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/ViaQ/logerr/v2/kverrors"
 	"net/url"
 
-	"github.com/ViaQ/logerr/v2/log"
 	logging "github.com/openshift/cluster-logging-operator/apis/logging/v1"
 	"github.com/openshift/cluster-logging-operator/internal/generator"
 	"github.com/openshift/cluster-logging-operator/internal/generator/fluentd"
@@ -30,7 +30,7 @@ type ConfigGenerator struct {
 	format func(conf string) string
 }
 
-func New(collectorType logging.LogCollectionType) *ConfigGenerator {
+func New(collectorType logging.LogCollectionType) (*ConfigGenerator, error) {
 	g := &ConfigGenerator{
 		format: func(conf string) string { return conf },
 	}
@@ -41,10 +41,10 @@ func New(collectorType logging.LogCollectionType) *ConfigGenerator {
 	case logging.LogCollectionTypeVector:
 		g.conf = vector.Conf
 	default:
-		log.NewLogger("").Error(errors.New("Unsupported collector implementation"), "type", collectorType)
-		return nil
+		return nil, kverrors.New("Unsupported collector implementation", "type", collectorType)
 	}
-	return g
+
+	return g, nil
 }
 
 func (cg *ConfigGenerator) GenerateConf(clspec *logging.ClusterLoggingSpec, secrets map[string]*corev1.Secret, clfspec *logging.ClusterLogForwarderSpec, op generator.Options) (string, error) {

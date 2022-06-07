@@ -1,7 +1,6 @@
 package forwarder
 
 import (
-	"errors"
 	"fmt"
 
 	forwardergenerator "github.com/openshift/cluster-logging-operator/internal/generator/forwarder"
@@ -78,9 +77,10 @@ func Generate(collectionType logging.LogCollectionType, clfYaml string, includeD
 	if debugOutput {
 		op[helpers.EnableDebugOutput] = ""
 	}
-	configGenerator := forwardergenerator.New(collectionType)
-	if configGenerator == nil {
-		return "", errors.New("unsupported collector implementation")
+	configGenerator, err := forwardergenerator.New(collectionType)
+	if err != nil {
+		return "", err
 	}
+
 	return configGenerator.GenerateConf(&clspec, clRequest.OutputSecrets, spec, op)
 }
