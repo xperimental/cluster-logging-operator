@@ -17,7 +17,11 @@ import (
 	"github.com/openshift/cluster-logging-operator/test"
 )
 
-var ErrParse = errors.New("logs could not be parsed")
+var (
+	logger = log.NewLogger("types")
+
+	ErrParse = errors.New("logs could not be parsed")
+)
 
 // ContainerLog
 type ContainerLog struct {
@@ -345,7 +349,6 @@ type AllLog struct {
 }
 
 func StrictlyParseLogs(in string, logs interface{}) error {
-	logger := log.NewLogger("types-testing")
 	logger.V(3).Info("ParseLogs", "content", in)
 	if in == "" {
 		return nil
