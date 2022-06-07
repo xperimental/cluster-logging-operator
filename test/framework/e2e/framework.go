@@ -619,7 +619,7 @@ func (tc *E2ETestFramework) CreatePipelineSecret(pwd, logStoreName, secretName s
 		return nil, err
 	}
 	scriptsDir := fmt.Sprintf("%s/scripts", pwd)
-	if err, _, _ := certificates.GenerateCertificates(constants.OpenshiftNS, scriptsDir, logStoreName, workingDir); err != nil {
+	if err, _, _ := certificates.GenerateCertificates(logger, constants.OpenshiftNS, scriptsDir, logStoreName, workingDir); err != nil {
 		return nil, err
 	}
 	data := map[string][]byte{

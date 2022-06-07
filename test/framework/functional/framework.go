@@ -185,7 +185,7 @@ func (f *CollectorFunctionalFramework) DeployWithVisitors(visitors []runtime.Pod
 	}
 
 	logger.V(2).Info("Generating Certificates")
-	if err, _, _ = certificates.GenerateCertificates(f.Test.NS.Name,
+	if err, _, _ = certificates.GenerateCertificates(logger, f.Test.NS.Name,
 		test.GitRoot("scripts"), "elasticsearch",
 		utils.DefaultWorkingDir); err != nil {
 		return err
