@@ -23,6 +23,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/util/retry"
 
 	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
@@ -32,6 +33,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -187,8 +189,27 @@ func (clusterRequest *ClusterLoggingRequest) removeCollector(name string) (err e
 			return
 		}
 
-		// Wait longer than the terminationGracePeriodSeconds
-		time.Sleep(12 * time.Second)
+		// Wait for the pods to vanish
+		listOpts := []client.ListOption{
+			client.InNamespace(constants.OpenshiftNS),
+			client.MatchingLabels{
+				"provider":      "openshift",
+				"component":     constants.CollectorName,
+				"logging-infra": constants.CollectorName,
+			},
+		}
+		err = wait.PollWithContext(context.TODO(), time.Second, 12*time.Second, func(ctx context.Context) (done bool, err error) {
+			list := &corev1.PodList{}
+			err = clusterRequest.Client.List(ctx, list, listOpts...)
+			if err != nil {
+				return false, err
+			}
+
+			return len(list.Items) == 0, nil
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
