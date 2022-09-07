@@ -3,6 +3,7 @@ package security
 import (
 	"path/filepath"
 
+	loggingv1 "github.com/openshift/cluster-logging-operator/apis/logging/v1"
 	"github.com/openshift/cluster-logging-operator/internal/constants"
 	corev1 "k8s.io/api/core/v1"
 )
@@ -53,6 +54,23 @@ key_pass = "{{.ClientKeyPassphrase }}"
 {{- end }}
 {{- end }}
 {{- end}}`
+}
+
+func NewTLSConf(componentID string, tlsSpec *loggingv1.OutputTLSSpec, secretName string, secret *corev1.Secret) (tlsConf TLSConf, hasKeys bool) {
+	tlsConf = TLSConf{
+		ComponentID:        componentID,
+		InsecureSkipVerify: tlsSpec != nil && tlsSpec.InsecureSkipVerify,
+	}
+	if HasTLSCertAndKey(secret) {
+		hasKeys = true
+		tlsConf.ClientCertPath = SecretPath(secretName, constants.ClientCertKey)
+		tlsConf.ClientKeyPath = SecretPath(secretName, constants.ClientPrivateKey)
+	}
+	if HasCABundle(secret) {
+		hasKeys = true
+		tlsConf.CAPath = SecretPath(secretName, constants.TrustedCABundleKey)
+	}
+	return tlsConf, hasKeys
 }
 
 var NoSecrets = map[string]*corev1.Secret{}

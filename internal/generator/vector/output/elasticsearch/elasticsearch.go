@@ -212,19 +212,7 @@ func TLSConf(o logging.OutputSpec, secret *corev1.Secret) []Element {
 	conf := []Element{}
 	if o.Secret != nil {
 		hasTLS := false
-		tlsConf := security.TLSConf{
-			ComponentID:        helpers.FormatComponentID(o.Name),
-			InsecureSkipVerify: o.TLS != nil && o.TLS.InsecureSkipVerify,
-		}
-		if o.Name == logging.OutputNameDefault || security.HasTLSCertAndKey(secret) {
-			hasTLS = true
-			tlsConf.ClientCertPath = security.SecretPath(o.Secret.Name, constants.ClientCertKey)
-			tlsConf.ClientKeyPath = security.SecretPath(o.Secret.Name, constants.ClientPrivateKey)
-		}
-		if o.Name == logging.OutputNameDefault || security.HasCABundle(secret) {
-			hasTLS = true
-			tlsConf.CAPath = security.SecretPath(o.Secret.Name, constants.TrustedCABundleKey)
-		}
+		tlsConf, hasTLS := security.NewTLSConf(helpers.FormatComponentID(o.Name), o.TLS, o.Secret.Name, secret)
 		if hasTLS {
 			conf = append(conf, tlsConf)
 		}

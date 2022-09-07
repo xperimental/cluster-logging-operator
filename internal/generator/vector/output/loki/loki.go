@@ -185,20 +185,7 @@ func TLSConf(o logging.OutputSpec, secret *corev1.Secret) []Element {
 	conf := []Element{}
 	if o.Secret != nil {
 		hasTLS := false
-		tlsConf := security.TLSConf{
-			ComponentID:        strings.ToLower(vectorhelpers.Replacer.Replace(o.Name)),
-			InsecureSkipVerify: o.TLS != nil && o.TLS.InsecureSkipVerify,
-		}
-
-		if o.Name == logging.OutputNameDefault || security.HasTLSCertAndKey(secret) {
-			hasTLS = true
-			tlsConf.ClientCertPath = security.SecretPath(o.Secret.Name, constants.ClientCertKey)
-			tlsConf.ClientKeyPath = security.SecretPath(o.Secret.Name, constants.ClientPrivateKey)
-		}
-		if o.Name == logging.OutputNameDefault || security.HasCABundle(secret) {
-			hasTLS = true
-			tlsConf.CAPath = security.SecretPath(o.Secret.Name, constants.TrustedCABundleKey)
-		}
+		tlsConf, hasTLS := security.NewTLSConf(vectorhelpers.FormatComponentID(o.Name), o.TLS, o.Secret.Name, secret)
 		if hasTLS {
 			conf = append(conf, tlsConf)
 		}
@@ -206,7 +193,7 @@ func TLSConf(o logging.OutputSpec, secret *corev1.Secret) []Element {
 		// Set CA from logcollector ServiceAccount for internal Loki
 		return []Element{
 			security.TLSConf{
-				ComponentID: strings.ToLower(vectorhelpers.Replacer.Replace(o.Name)),
+				ComponentID: vectorhelpers.FormatComponentID(o.Name),
 				CAPath:      "/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt",
 			},
 		}
