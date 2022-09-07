@@ -142,31 +142,24 @@ func TLSConf(o logging.OutputSpec, secret *corev1.Secret) []Element {
 			})
 		}
 
-		conf = append(conf, security.TLSConf{
+		tlsConf := security.TLSConf{
 			ComponentID: componentID,
 			// Kafka does not use the verify_certificate or verify_hostname options, see insecureTLS
 			InsecureSkipVerify: false,
-		})
+		}
 
 		if security.HasPassphrase(secret) {
-			pp := Passphrase{
-				PassphrasePath: security.SecretPath(o.Secret.Name, constants.Passphrase),
-			}
-			conf = append(conf, pp)
+			tlsConf.ClientKeyPassphrase = security.SecretPath(o.Secret.Name, constants.Passphrase)
 		}
 		if security.HasTLSCertAndKey(secret) {
-			kc := TLSKeyCert{
-				CertPath: security.SecretPath(o.Secret.Name, constants.ClientCertKey),
-				KeyPath:  security.SecretPath(o.Secret.Name, constants.ClientPrivateKey),
-			}
-			conf = append(conf, kc)
+			tlsConf.ClientCertPath = security.SecretPath(o.Secret.Name, constants.ClientCertKey)
+			tlsConf.ClientKeyPath = security.SecretPath(o.Secret.Name, constants.ClientPrivateKey)
 		}
 		if security.HasCABundle(secret) {
-			ca := CAFile{
-				CAFilePath: security.SecretPath(o.Secret.Name, constants.TrustedCABundleKey),
-			}
-			conf = append(conf, ca)
+			tlsConf.CAPath = security.SecretPath(o.Secret.Name, constants.TrustedCABundleKey)
 		}
+
+		conf = append(conf, tlsConf)
 	}
 
 	return conf

@@ -1,19 +1,11 @@
 package security
 
 import (
-	"fmt"
 	"path/filepath"
 
 	"github.com/openshift/cluster-logging-operator/internal/constants"
 	corev1 "k8s.io/api/core/v1"
 )
-
-type TLS bool
-
-type TLSCertKey struct {
-	CertPath string
-	KeyPath  string
-}
 
 type UserNamePass struct {
 	Username string
@@ -24,21 +16,17 @@ type SharedKey struct {
 	Key string
 }
 
-type CAFile struct {
-	CAFilePath string
-}
-
-type Passphrase struct {
-	PassphrasePath string
-}
-
 type BearerToken struct {
 	Token string
 }
 
 type TLSConf struct {
-	ComponentID        string
-	InsecureSkipVerify bool
+	ComponentID         string
+	InsecureSkipVerify  bool
+	CAPath              string
+	ClientCertPath      string
+	ClientKeyPath       string
+	ClientKeyPassphrase string
 }
 
 func (t TLSConf) Name() string {
@@ -53,6 +41,16 @@ enabled = true
 {{- if .InsecureSkipVerify }}
 verify_certificate = false
 verify_hostname = false
+{{- end }}
+{{- with .CAPath }}
+ca_file = "{{.}}"
+{{- end }}
+{{- if and .ClientCertPath .ClientKeyPath }}
+crt_file = "{{.ClientCertPath}}"
+key_file = "{{.ClientKeyPath}}"
+{{- if .ClientKeyPassphrase }}
+key_pass = "{{.ClientKeyPassphrase }}"
+{{- end }}
 {{- end }}
 {{- end}}`
 }
@@ -104,7 +102,7 @@ func HasKeys(secret *corev1.Secret, keys ...string) bool {
 }
 
 func SecretPath(name string, file string) string {
-	return fmt.Sprintf("%q", filepath.Join("/var/run/ocp-collector/secrets", name, file))
+	return filepath.Join("/var/run/ocp-collector/secrets", name, file)
 }
 
 // TryKeys try keys in turn return data for fist one present with ok=true.

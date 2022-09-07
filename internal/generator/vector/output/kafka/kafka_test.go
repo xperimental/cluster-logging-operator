@@ -111,8 +111,8 @@ timestamp_format = "rfc3339"
 
 [sinks.kafka_receiver.tls]
 enabled = true
-key_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.key"
 crt_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.crt"
+key_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.key"
 
 # SASL Config
 [sinks.kafka_receiver.sasl]
@@ -166,8 +166,8 @@ timestamp_format = "rfc3339"
 
 [sinks.kafka_receiver.tls]
 enabled = true
-key_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.key"
 crt_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.crt"
+key_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.key"
 
 # SASL Config
 [sinks.kafka_receiver.sasl]
@@ -213,9 +213,9 @@ timestamp_format = "rfc3339"
 
 [sinks.kafka_receiver.tls]
 enabled = true
-key_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.key"
-crt_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.crt"
 ca_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/ca-bundle.crt"
+crt_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.crt"
+key_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.key"
 `,
 		}),
 		Entry("with TLS and InsecureSkipVerify", helpers.ConfGenerateTest{
@@ -259,9 +259,9 @@ timestamp_format = "rfc3339"
 "enable.ssl.certificate.verification" = "false"
 [sinks.kafka_receiver.tls]
 enabled = true
-key_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.key"
-crt_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.crt"
 ca_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/ca-bundle.crt"
+crt_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.crt"
+key_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.key"
 `,
 		}),
 		Entry("with basic TLS", helpers.ConfGenerateTest{

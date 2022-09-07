@@ -50,7 +50,7 @@ func (g GoogleCloudLogging) Template() string {
 type = "gcp_stackdriver_logs"
 inputs = {{.Inputs}}
 {{kv .LogDestination -}}
-credentials_path = {{.CredentialsPath}}
+credentials_path = "{{.CredentialsPath}}"
 log_id = "{{.LogID}}"
 severity_key = "{{.SeverityKey}}"
 

@@ -231,9 +231,9 @@ id_key = "_id"
 
 [sinks.es_1.tls]
 enabled = true
-key_file = "/var/run/ocp-collector/secrets/es-1/tls.key"
-crt_file = "/var/run/ocp-collector/secrets/es-1/tls.crt"
 ca_file = "/var/run/ocp-collector/secrets/es-1/ca-bundle.crt"
+crt_file = "/var/run/ocp-collector/secrets/es-1/tls.crt"
+key_file = "/var/run/ocp-collector/secrets/es-1/tls.key"
 `,
 		}),
 		Entry("without security", helpers.ConfGenerateTest{
@@ -459,9 +459,9 @@ id_key = "_id"
 
 [sinks.es_1.tls]
 enabled = true
-key_file = "/var/run/ocp-collector/secrets/es-1/tls.key"
-crt_file = "/var/run/ocp-collector/secrets/es-1/tls.crt"
 ca_file = "/var/run/ocp-collector/secrets/es-1/ca-bundle.crt"
+crt_file = "/var/run/ocp-collector/secrets/es-1/tls.crt"
+key_file = "/var/run/ocp-collector/secrets/es-1/tls.key"
 
 # Set Elasticsearch index
 [transforms.es_2_add_es_index]
@@ -541,9 +541,9 @@ id_key = "_id"
 
 [sinks.es_2.tls]
 enabled = true
-key_file = "/var/run/ocp-collector/secrets/es-2/tls.key"
-crt_file = "/var/run/ocp-collector/secrets/es-2/tls.crt"
 ca_file = "/var/run/ocp-collector/secrets/es-2/ca-bundle.crt"
+crt_file = "/var/run/ocp-collector/secrets/es-2/tls.crt"
+key_file = "/var/run/ocp-collector/secrets/es-2/tls.key"
 `,
 		}),
 		Entry("with StructuredTypeKey", helpers.ConfGenerateTest{

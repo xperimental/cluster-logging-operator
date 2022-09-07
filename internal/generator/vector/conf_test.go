@@ -384,10 +384,9 @@ timestamp_format = "rfc3339"
 
 [sinks.kafka_receiver.tls]
 enabled = true
-key_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.key"
-crt_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.crt"
 ca_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/ca-bundle.crt"
-
+crt_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.crt"
+key_file = "/var/run/ocp-collector/secrets/kafka-receiver-1/tls.key"
 [sinks.prometheus_output]
 type = "prometheus_exporter"
 inputs = ["internal_metrics"]
@@ -805,10 +804,9 @@ id_key = "_id"
 
 [sinks.es_1.tls]
 enabled = true
-key_file = "/var/run/ocp-collector/secrets/es-1/tls.key"
-crt_file = "/var/run/ocp-collector/secrets/es-1/tls.crt"
 ca_file = "/var/run/ocp-collector/secrets/es-1/ca-bundle.crt"
-
+crt_file = "/var/run/ocp-collector/secrets/es-1/tls.crt"
+key_file = "/var/run/ocp-collector/secrets/es-1/tls.key"
 # Set Elasticsearch index
 [transforms.es_2_add_es_index]
 type = "remap"
@@ -887,10 +885,9 @@ id_key = "_id"
 
 [sinks.es_2.tls]
 enabled = true
-key_file = "/var/run/ocp-collector/secrets/es-2/tls.key"
-crt_file = "/var/run/ocp-collector/secrets/es-2/tls.crt"
 ca_file = "/var/run/ocp-collector/secrets/es-2/ca-bundle.crt"
-
+crt_file = "/var/run/ocp-collector/secrets/es-2/tls.crt"
+key_file = "/var/run/ocp-collector/secrets/es-2/tls.key"
 [sinks.prometheus_output]
 type = "prometheus_exporter"
 inputs = ["internal_metrics"]
