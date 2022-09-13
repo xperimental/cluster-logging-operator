@@ -32,7 +32,6 @@ type ClusterLoggingSpec struct {
 	// Indicator if the resource is 'Managed' or 'Unmanaged' by the operator
 	//
 	// +kubebuilder:validation:Enum:=Managed;Unmanaged
-	// +optional
 	ManagementState ManagementState `json:"managementState"`
 
 	// Specification of the Visualization component for the cluster

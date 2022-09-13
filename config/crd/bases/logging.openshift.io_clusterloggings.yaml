@@ -960,6 +960,8 @@ spec:
                 required:
                 - type
                 type: object
+            required:
+            - managementState
             type: object
           status:
             description: ClusterLoggingStatus defines the observed state of ClusterLogging
