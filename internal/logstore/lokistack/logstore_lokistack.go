@@ -24,8 +24,7 @@ const (
 	lokiStackWriterClusterRoleName        = "logging-collector-logs-writer"
 	lokiStackWriterClusterRoleBindingName = "logging-collector-logs-writer"
 
-	lokiStackAppReaderClusterRoleName        = "logging-application-logs-reader"
-	lokiStackAppReaderClusterRoleBindingName = "logging-all-authenticated-application-logs-reader"
+	lokiStackAppReaderClusterRoleName = "logging-application-logs-reader"
 )
 
 var (
@@ -61,18 +60,10 @@ func ReconcileLokiStackLogStore(k8sClient client.Client, deletionTimestamp *v1.T
 		return kverrors.Wrap(err, "Failed to create or update ClusterRole for reading application logs.")
 	}
 
-	if err := reconcile.ClusterRoleBinding(k8sClient, lokiStackAppReaderClusterRoleBindingName, newLokiStackAppReaderClusterRoleBinding); err != nil {
-		return kverrors.Wrap(err, "Failed to create or update ClusterRoleBinding for reading application logs.")
-	}
-
 	return nil
 }
 
 func RemoveRbac(k8sClient client.Client, removeFinalizer func(string) error) error {
-	if err := reconcile.DeleteClusterRoleBinding(k8sClient, lokiStackAppReaderClusterRoleBindingName); err != nil {
-		return err
-	}
-
 	if err := reconcile.DeleteClusterRole(k8sClient, lokiStackAppReaderClusterRoleName); err != nil {
 		return err
 	}
@@ -145,22 +136,6 @@ func newLokiStackAppReaderClusterRole() *rbacv1.ClusterRole {
 			Verbs: []string{
 				"get",
 			},
-		},
-	)
-}
-
-func newLokiStackAppReaderClusterRoleBinding() *rbacv1.ClusterRoleBinding {
-	return runtime.NewClusterRoleBinding(
-		lokiStackAppReaderClusterRoleBindingName,
-		rbacv1.RoleRef{
-			APIGroup: "rbac.authorization.k8s.io",
-			Kind:     "ClusterRole",
-			Name:     lokiStackAppReaderClusterRoleName,
-		},
-		rbacv1.Subject{
-			APIGroup: "rbac.authorization.k8s.io",
-			Kind:     "Group",
-			Name:     "system:authenticated",
 		},
 	)
 }
