@@ -19,56 +19,65 @@ import (
 
 const lokiReceiverName = "loki-receiver"
 
-var specs = []loggingv1.ClusterLogForwarderSpec{
+var tests = []struct {
+	desc string
+	spec loggingv1.ClusterLogForwarderSpec
+}{
 	{
-		Outputs: []loggingv1.OutputSpec{{
-			Name: lokiReceiverName,
-			Type: loggingv1.OutputTypeLoki,
-		}},
-		Pipelines: []loggingv1.PipelineSpec{
-			{
-				Name:       "test-app",
-				InputRefs:  []string{loggingv1.InputNameApplication},
-				OutputRefs: []string{lokiReceiverName},
-				Labels:     map[string]string{"key1": "value1", "key2": "value2"},
-			},
-			{
-				Name:       "test-audit",
-				InputRefs:  []string{loggingv1.InputNameAudit},
-				OutputRefs: []string{lokiReceiverName},
-			},
-			{
-				Name:       "test-infra",
-				InputRefs:  []string{loggingv1.InputNameInfrastructure},
-				OutputRefs: []string{lokiReceiverName},
+		desc: "simple loki",
+		spec: loggingv1.ClusterLogForwarderSpec{
+			Outputs: []loggingv1.OutputSpec{{
+				Name: lokiReceiverName,
+				Type: loggingv1.OutputTypeLoki,
+			}},
+			Pipelines: []loggingv1.PipelineSpec{
+				{
+					Name:       "test-app",
+					InputRefs:  []string{loggingv1.InputNameApplication},
+					OutputRefs: []string{lokiReceiverName},
+					Labels:     map[string]string{"key1": "value1", "key2": "value2"},
+				},
+				{
+					Name:       "test-audit",
+					InputRefs:  []string{loggingv1.InputNameAudit},
+					OutputRefs: []string{lokiReceiverName},
+				},
+				{
+					Name:       "test-infra",
+					InputRefs:  []string{loggingv1.InputNameInfrastructure},
+					OutputRefs: []string{lokiReceiverName},
+				},
 			},
 		},
 	},
 	{
-		Outputs: []loggingv1.OutputSpec{{
-			Name: lokiReceiverName,
-			Type: loggingv1.OutputTypeLoki,
-			OutputTypeSpec: loggingv1.OutputTypeSpec{
-				Loki: &loggingv1.Loki{
-					TenantKey: "kubernetes.pod_name",
+		desc: "pod name as tenant key",
+		spec: loggingv1.ClusterLogForwarderSpec{
+			Outputs: []loggingv1.OutputSpec{{
+				Name: lokiReceiverName,
+				Type: loggingv1.OutputTypeLoki,
+				OutputTypeSpec: loggingv1.OutputTypeSpec{
+					Loki: &loggingv1.Loki{
+						TenantKey: "kubernetes.pod_name",
+					},
 				},
-			},
-		}},
-		Pipelines: []loggingv1.PipelineSpec{
-			{
-				Name:       "test-app",
-				InputRefs:  []string{loggingv1.InputNameApplication},
-				OutputRefs: []string{lokiReceiverName},
-			},
-			{
-				Name:       "test-audit",
-				InputRefs:  []string{loggingv1.InputNameAudit},
-				OutputRefs: []string{lokiReceiverName},
-			},
-			{
-				Name:       "test-infra",
-				InputRefs:  []string{loggingv1.InputNameInfrastructure},
-				OutputRefs: []string{lokiReceiverName},
+			}},
+			Pipelines: []loggingv1.PipelineSpec{
+				{
+					Name:       "test-app",
+					InputRefs:  []string{loggingv1.InputNameApplication},
+					OutputRefs: []string{lokiReceiverName},
+				},
+				{
+					Name:       "test-audit",
+					InputRefs:  []string{loggingv1.InputNameAudit},
+					OutputRefs: []string{lokiReceiverName},
+				},
+				{
+					Name:       "test-infra",
+					InputRefs:  []string{loggingv1.InputNameInfrastructure},
+					OutputRefs: []string{lokiReceiverName},
+				},
 			},
 		},
 	},
@@ -77,9 +86,11 @@ var specs = []loggingv1.ClusterLogForwarderSpec{
 func TestLogForwardingToLokiWithFluentd(t *testing.T) {
 	cl := runtime.NewClusterLogging()
 	clf := runtime.NewClusterLogForwarder()
-	for _, spec := range specs {
-		clf.Spec = spec
-		testLogForwardingToLoki(t, cl, clf)
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			clf.Spec = tc.spec
+			testLogForwardingToLoki(t, cl, clf)
+		})
 	}
 }
 
@@ -88,9 +99,11 @@ func TestLogForwardingToLokiWithVector(t *testing.T) {
 	cl.Spec.Collection.Type = loggingv1.LogCollectionTypeVector
 	cl.Spec.Collection.CollectorSpec = loggingv1.CollectorSpec{}
 	clf := runtime.NewClusterLogForwarder()
-	for _, spec := range specs {
-		clf.Spec = spec
-		testLogForwardingToLoki(t, cl, clf)
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			clf.Spec = tc.spec
+			testLogForwardingToLoki(t, cl, clf)
+		})
 	}
 }
 
