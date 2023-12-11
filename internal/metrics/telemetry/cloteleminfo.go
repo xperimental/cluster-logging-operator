@@ -2,220 +2,187 @@ package telemetry
 
 import (
 	v1 "github.com/openshift/cluster-logging-operator/apis/logging/v1"
-	"github.com/openshift/cluster-logging-operator/internal/utils"
 	"github.com/openshift/cluster-logging-operator/version"
 	"github.com/prometheus/client_golang/prometheus"
 	"sigs.k8s.io/controller-runtime/pkg/metrics"
+	"strconv"
 )
 
 const (
 	IsPresent    = "1"
 	IsNotPresent = "0"
 
-	InputNameApplication    = v1.InputNameApplication
-	InputNameAudit          = v1.InputNameAudit
-	InputNameInfrastructure = v1.InputNameInfrastructure
-
-	OutputTypeDefault            = "default"
-	OutputTypeElasticsearch      = v1.OutputTypeElasticsearch
-	OutputTypeFluentdForward     = v1.OutputTypeFluentdForward
-	OutputTypeSyslog             = v1.OutputTypeSyslog
-	OutputTypeKafka              = v1.OutputTypeKafka
-	OutputTypeLoki               = v1.OutputTypeLoki
-	OutputTypeCloudwatch         = v1.OutputTypeCloudwatch
-	OutputTypeHttp               = v1.OutputTypeHttp
-	OutputTypeGoogleCloudLogging = v1.OutputTypeGoogleCloudLogging
-	OutputTypeSplunk             = v1.OutputTypeSplunk
+	OutputTypeElasticsearch = v1.OutputTypeElasticsearch
+	OutputTypeLoki          = v1.OutputTypeLoki
 
 	ManagedStatus = "managedStatus"
 	HealthStatus  = "healthStatus"
 	VersionNo     = "version"
 	PipelineNo    = "pipelineInfo"
 	Deployed      = "deployed"
+
+	metricsPrefix     = "log_"
+	defaultOutputName = "default"
 )
 
-// placeholder for keeping clo info which will be used for clo metrics update
-type TData struct {
-	CLInfo              *utils.StringMap
-	CLLogStoreType      *utils.StringMap
-	CollectorErrorCount *utils.Float64Map
-	CLFInfo             *utils.StringMap
-	CLFInputType        *utils.StringMap
-	CLFOutputType       *utils.StringMap
-	LFMEInfo            *utils.StringMap
+var (
+	forwarderInputTypes = []string{
+		v1.InputNameAudit,
+		v1.InputNameApplication,
+		v1.InputNameInfrastructure,
+	}
+	forwarderOutputTypes = []string{
+		v1.OutputTypeElasticsearch,
+		v1.OutputTypeFluentdForward,
+		v1.OutputTypeSyslog,
+		v1.OutputTypeKafka,
+		v1.OutputTypeLoki,
+		v1.OutputTypeCloudwatch,
+		v1.OutputTypeHttp,
+		v1.OutputTypeGoogleCloudLogging,
+		v1.OutputTypeSplunk,
+	}
+)
+
+type clusterLoggingData struct {
+	Version string
+	Managed bool
+	Healthy bool
 }
 
-// IsNotPresent stands for managedStatus and healthStatus true and healthy
-func NewTD() *TData {
-	return &TData{
-		CLInfo:              utils.InitStringMap(map[string]string{VersionNo: version.Version, ManagedStatus: IsNotPresent, HealthStatus: IsNotPresent}),
-		CLLogStoreType:      utils.InitStringMap(map[string]string{OutputTypeElasticsearch: IsNotPresent, OutputTypeLoki: IsNotPresent}),
-		CollectorErrorCount: utils.InitFloat64Map(map[string]float64{"CollectorErrorCount": 0}),
-		CLFInfo:             utils.InitStringMap(map[string]string{HealthStatus: IsNotPresent, PipelineNo: IsNotPresent}),
-		CLFInputType:        utils.InitStringMap(map[string]string{InputNameApplication: IsNotPresent, InputNameAudit: IsNotPresent, InputNameInfrastructure: IsNotPresent}),
-		CLFOutputType: utils.InitStringMap(map[string]string{
-			OutputTypeDefault:            IsNotPresent,
-			OutputTypeElasticsearch:      IsNotPresent,
-			OutputTypeFluentdForward:     IsNotPresent,
-			OutputTypeSyslog:             IsNotPresent,
-			OutputTypeKafka:              IsNotPresent,
-			OutputTypeLoki:               IsNotPresent,
-			OutputTypeCloudwatch:         IsNotPresent,
-			OutputTypeHttp:               IsNotPresent,
-			OutputTypeSplunk:             IsNotPresent,
-			OutputTypeGoogleCloudLogging: IsNotPresent}),
-		LFMEInfo: utils.InitStringMap(map[string]string{Deployed: IsNotPresent, HealthStatus: IsNotPresent}),
+type clusterLogForwarderData struct {
+	Healthy          bool
+	HasDefaultOutput bool
+	NumPipelines     uint
+	// Inputs contains the label values for the different inputs listed in "forwarderInputTypes".
+	// The value can either be "0" or "1" depending on whether the listed input is present in the configuration.
+	// The order of the values needs to match the keys present in "forwarderInputTypes".
+	Inputs []string
+	// Outputs contains the label values for the different inputs listed in "forwarderOutputTypes".
+	// The value can either be "0" or "1" depending on whether the listed input is present in the configuration.
+	// The order of the values needs to match the keys present in "forwarderOutputTypes".
+	Outputs []string
+}
+
+type logFileMetricExporterData struct {
+	Deployed bool
+	Healthy  bool
+}
+
+type telemetryData struct {
+	CLInfo              clusterLoggingData
+	CollectorErrorCount float64
+	CLFInfo             clusterLogForwarderData
+	LFMEInfo            logFileMetricExporterData
+}
+
+func newTelemetryData() *telemetryData {
+	return &telemetryData{
+		CLInfo: clusterLoggingData{
+			Version: version.Version,
+			Managed: false,
+			Healthy: false,
+		},
+		CollectorErrorCount: 0,
+		CLFInfo: clusterLogForwarderData{
+			Healthy:      false,
+			NumPipelines: 0,
+			Inputs:       makeZeroStrings(len(forwarderInputTypes)),
+			Outputs:      makeZeroStrings(len(forwarderOutputTypes)),
+		},
+		LFMEInfo: logFileMetricExporterData{
+			Deployed: false,
+			Healthy:  false,
+		},
 	}
+}
+
+var _ prometheus.Collector = &telemetryData{}
+
+func (t *telemetryData) Describe(descs chan<- *prometheus.Desc) {
+	descs <- clusterLoggingInfoDesc
+	descs <- collectorErrorCountDesc
+	descs <- clusterLogForwarderDesc
+	descs <- forwarderInputInfoDesc
+	descs <- forwarderOutputInfoDesc
+	descs <- logFileMetricExporterInfoDesc
+}
+
+func (t *telemetryData) Collect(m chan<- prometheus.Metric) {
+	m <- prometheus.MustNewConstMetric(clusterLoggingInfoDesc, prometheus.GaugeValue, 1.0, t.CLInfo.Version, boolLabel(t.CLInfo.Managed), boolLabel(t.CLInfo.Healthy))
+	m <- prometheus.MustNewConstMetric(collectorErrorCountDesc, prometheus.CounterValue, t.CollectorErrorCount, t.CLInfo.Version)
+	m <- prometheus.MustNewConstMetric(clusterLogForwarderDesc, prometheus.GaugeValue, 1.0, boolLabel(t.CLFInfo.Healthy), uintLabel(t.CLFInfo.NumPipelines))
+	m <- prometheus.MustNewConstMetric(forwarderInputInfoDesc, prometheus.GaugeValue, 1.0, t.CLFInfo.Inputs...)
+
+	outputLabels := append([]string{boolLabel(t.CLFInfo.HasDefaultOutput)}, t.CLFInfo.Outputs...)
+	m <- prometheus.MustNewConstMetric(forwarderOutputInfoDesc, prometheus.GaugeValue, 1.0, outputLabels...)
+
+	m <- prometheus.MustNewConstMetric(logFileMetricExporterInfoDesc, prometheus.GaugeValue, 1.0, boolLabel(t.LFMEInfo.Deployed), boolLabel(t.LFMEInfo.Healthy))
 }
 
 var (
-	Data = NewTD()
+	Data = newTelemetryData()
 
-	mCLInfo = NewInfoVec(
-		"log_logging_info",
+	clusterLoggingInfoDesc = prometheus.NewDesc(
+		metricsPrefix+"logging_info",
 		"Clo version managementState healthState specific metric",
-		[]string{VersionNo, ManagedStatus, HealthStatus},
+		[]string{VersionNo, ManagedStatus, HealthStatus}, nil,
 	)
-	mCollectorErrorCount = NewInfoVec(
-		"log_collector_error_count_total",
+	collectorErrorCountDesc = prometheus.NewDesc(
+		metricsPrefix+"collector_error_count_total",
 		"log collector total number of error counts ",
-		[]string{VersionNo},
+		[]string{VersionNo}, nil,
 	)
-	mCLFInfo = NewInfoVec(
-		"log_forwarder_pipeline_info",
+	clusterLogForwarderDesc = prometheus.NewDesc(
+		metricsPrefix+"forwarder_pipeline_info",
 		"Clf healthState and pipelineInfo specific metric",
-		[]string{HealthStatus, PipelineNo},
+		[]string{HealthStatus, PipelineNo}, nil,
 	)
 
-	mCLFInputType = NewInfoVec(
+	forwarderInputInfoDesc = prometheus.NewDesc(
 		"log_forwarder_input_info",
 		"Clf input type specific metric",
-		[]string{InputNameApplication, InputNameAudit, InputNameInfrastructure},
+		forwarderInputTypes, nil,
 	)
 
-	mCLFOutputType = NewInfoVec(
+	forwarderOutputInfoDesc = prometheus.NewDesc(
 		"log_forwarder_output_info",
 		"Clf output type specific metric",
-		[]string{
-			OutputTypeDefault,
-			OutputTypeElasticsearch,
-			OutputTypeFluentdForward,
-			OutputTypeSyslog,
-			OutputTypeKafka,
-			OutputTypeLoki,
-			OutputTypeCloudwatch,
-			OutputTypeHttp,
-			OutputTypeSplunk,
-			OutputTypeGoogleCloudLogging},
+		append([]string{defaultOutputName}, forwarderOutputTypes...), nil,
 	)
 
-	mLFMEInfo = NewInfoVec(
+	logFileMetricExporterInfoDesc = prometheus.NewDesc(
 		"log_file_metric_exporter_info",
 		"LFME health and deployed status specific metric",
-		[]string{Deployed, HealthStatus},
+		[]string{Deployed, HealthStatus}, nil,
 	)
-
-	MetricCLList = []prometheus.Collector{
-		mCLInfo,
-	}
-
-	MetricCLFList = []prometheus.Collector{
-		mCollectorErrorCount,
-		mCLFInfo,
-		mCLFInputType,
-		mCLFOutputType,
-	}
-
-	MetricLFMEList = []prometheus.Collector{
-		mLFMEInfo,
-	}
 )
 
 func RegisterMetrics() error {
-
-	for _, metric := range MetricCLList {
-		metrics.Registry.MustRegister(metric)
-	}
-
-	for _, metric := range MetricCLFList {
-		metrics.Registry.MustRegister(metric)
-	}
-
-	for _, metric := range MetricLFMEList {
-		metrics.Registry.MustRegister(metric)
+	if err := metrics.Registry.Register(Data); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func SetCLMetrics(value float64) {
-	CLInfo := Data.CLInfo
-	mCLInfo.With(prometheus.Labels{
-		VersionNo:     CLInfo.Get(VersionNo),
-		ManagedStatus: CLInfo.Get(ManagedStatus),
-		HealthStatus:  CLInfo.Get(HealthStatus)}).Set(value)
+func boolLabel(value bool) string {
+	if value {
+		return "1"
+	}
+
+	return "0"
 }
 
-// CancelMetrics resets previous info metrics
-func CancelMetrics() {
-	SetCLFMetrics(0)
-	SetCLMetrics(0)
-	SetLFMEMetrics(0)
+func uintLabel(value uint) string {
+	return strconv.FormatUint(uint64(value), 10)
 }
 
-func UpdateMetrics() {
-	SetCLMetrics(1)
-	SetCLFMetrics(1)
-}
+func makeZeroStrings(length int) []string {
+	result := make([]string, length)
+	for i := range result {
+		result[i] = "0"
+	}
 
-func SetCLFMetrics(value float64) {
-	CLInfo := Data.CLInfo
-	CErrorCount := Data.CollectorErrorCount
-	CLFInfo := Data.CLFInfo
-	CLFInputType := Data.CLFInputType
-	CLFOutputType := Data.CLFOutputType
-
-	mCollectorErrorCount.With(prometheus.Labels{
-		VersionNo: CLInfo.Get(VersionNo)}).Set(CErrorCount.Get("CollectorErrorCount"))
-
-	mCLFInfo.With(prometheus.Labels{
-		HealthStatus: CLFInfo.Get(HealthStatus),
-		PipelineNo:   CLFInfo.Get(PipelineNo)}).Set(value)
-
-	mCLFInputType.With(prometheus.Labels{
-		InputNameApplication:    CLFInputType.Get(InputNameApplication),
-		InputNameAudit:          CLFInputType.Get(InputNameAudit),
-		InputNameInfrastructure: CLFInputType.Get(InputNameInfrastructure)}).Set(value)
-
-	mCLFOutputType.With(prometheus.Labels{
-		OutputTypeDefault:            CLFOutputType.Get(OutputTypeDefault),
-		OutputTypeElasticsearch:      CLFOutputType.Get(OutputTypeElasticsearch),
-		OutputTypeFluentdForward:     CLFOutputType.Get(OutputTypeFluentdForward),
-		OutputTypeSyslog:             CLFOutputType.Get(OutputTypeSyslog),
-		OutputTypeKafka:              CLFOutputType.Get(OutputTypeKafka),
-		OutputTypeLoki:               CLFOutputType.Get(OutputTypeLoki),
-		OutputTypeCloudwatch:         CLFOutputType.Get(OutputTypeCloudwatch),
-		OutputTypeHttp:               CLFOutputType.Get(OutputTypeHttp),
-		OutputTypeSplunk:             CLFOutputType.Get(OutputTypeSplunk),
-		OutputTypeGoogleCloudLogging: CLFOutputType.Get(OutputTypeGoogleCloudLogging)}).Set(value)
-}
-
-func SetLFMEMetrics(value float64) {
-	LFMEInfo := Data.LFMEInfo
-
-	mLFMEInfo.With(prometheus.Labels{
-		Deployed:     LFMEInfo.Get(Deployed),
-		HealthStatus: LFMEInfo.Get(HealthStatus),
-	}).Set(value)
-}
-
-func NewInfoVec(metricname string, metrichelp string, labelNames []string) *prometheus.GaugeVec {
-
-	return prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Name: metricname,
-			Help: metrichelp,
-		},
-		labelNames,
-	)
+	return result
 }

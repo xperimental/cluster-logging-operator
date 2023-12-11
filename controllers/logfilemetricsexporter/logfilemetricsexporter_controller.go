@@ -48,9 +48,6 @@ func condNotReady(r status.ConditionReason, format string, args ...interface{}) 
 func (r *ReconcileLogFileMetricExporter) Reconcile(ctx context.Context, request ctrl.Request) (ctrl.Result, error) {
 	log.V(3).Info("logfilemetricsexporter-controller fetching LFME instance")
 
-	telemetry.SetLFMEMetrics(0) // Cancel previous info metric
-	defer func() { telemetry.SetLFMEMetrics(1) }()
-
 	lfmeInstance := loggingruntime.NewLogFileMetricExporter(request.NamespacedName.Namespace, request.NamespacedName.Name)
 	r.Recorder.Event(lfmeInstance, corev1.EventTypeNormal, "ReconcilingLFMECR", "Reconciling Log File Metrics Exporter resource")
 
@@ -79,13 +76,13 @@ func (r *ReconcileLogFileMetricExporter) Reconcile(ctx context.Context, request 
 		lfmeInstance.Status.Conditions.SetCondition(
 			condNotReady(loggingv1.ReasonInvalid, reconcileErr.Error()))
 		// if cluster is set to fail to reconcile then set healthStatus as 0
-		telemetry.Data.LFMEInfo.Set(telemetry.HealthStatus, constants.UnHealthyStatus)
+		telemetry.Data.LFMEInfo.Healthy = false
 		log.V(2).Error(reconcileErr, "logfilemetricexporter-controller returning, error")
 
 		r.Recorder.Event(lfmeInstance, corev1.EventTypeWarning, string(loggingv1.ReasonInvalid), reconcileErr.Error())
 	} else {
 		if !lfmeInstance.Status.Conditions.SetCondition(condReady) {
-			telemetry.Data.LFMEInfo.Set(telemetry.HealthStatus, constants.HealthyStatus)
+			telemetry.Data.LFMEInfo.Healthy = false
 			r.Recorder.Event(lfmeInstance, corev1.EventTypeNormal, string(condReady.Type), "LogFileMetricExporter deployed and ready")
 		}
 	}

@@ -71,12 +71,11 @@ func Reconcile(lfmeInstance *loggingv1alpha1.LogFileMetricExporter,
 		owner,
 		commonLabels); err != nil {
 		msg := fmt.Sprintf("Unable to reconcile LogFileMetricExporter: %v", err)
-		telemetry.Data.LFMEInfo.Set(telemetry.HealthStatus, constants.UnHealthyStatus)
+		telemetry.Data.LFMEInfo.Healthy = false
 		log.Error(err, msg)
 		return errors.New(msg)
 	}
 
-	telemetry.Data.LFMEInfo.Set(telemetry.Deployed, telemetry.IsPresent)
-
+	telemetry.Data.LFMEInfo.Healthy = true
 	return nil
 }

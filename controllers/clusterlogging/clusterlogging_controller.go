@@ -67,9 +67,6 @@ func (r *ReconcileClusterLogging) Reconcile(ctx context.Context, request ctrl.Re
 	log.V(3).Info("Clusterlogging reconcile request.", "namespace", request.Namespace, "name", request.Name)
 	r.Recorder.Event(loggingruntime.NewClusterLogging(request.NamespacedName.Namespace, request.NamespacedName.Name), corev1.EventTypeNormal, constants.EventReasonReconcilingLoggingCR, "Reconciling logging resource")
 
-	telemetry.SetCLMetrics(0) // Cancel previous info metric
-	defer func() { telemetry.SetCLMetrics(1) }()
-
 	removeFinalizer := func(identifier string) error {
 		return k8shandler.RemoveFinalizer(r.Client, request.NamespacedName.Namespace, request.NamespacedName.Name, identifier)
 	}
@@ -107,7 +104,7 @@ func (r *ReconcileClusterLogging) Reconcile(ctx context.Context, request ctrl.Re
 
 	if instance.Spec.ManagementState == loggingv1.ManagementStateUnmanaged {
 		// if cluster is set to unmanaged then set managedStatus as 0
-		telemetry.Data.CLInfo.Set("managedStatus", constants.UnManagedStatus)
+		telemetry.Data.CLInfo.Managed = false
 		return ctrl.Result{}, nil
 	}
 	clf, err, _ := loader.FetchClusterLogForwarder(r.Client, request.NamespacedName.Namespace, request.NamespacedName.Name, false, func() loggingv1.ClusterLogging { return instance })
@@ -118,7 +115,7 @@ func (r *ReconcileClusterLogging) Reconcile(ctx context.Context, request ctrl.Re
 	clusterVersion, clusterID := r.GetClusterVersionID(ctx, request.Namespace)
 	resourceNames := factory.GenerateResourceNames(clf)
 	if err = k8shandler.Reconcile(&instance, &clf, r.Client, r.Reader, r.Recorder, clusterVersion, clusterID, resourceNames); err != nil {
-		telemetry.Data.CLInfo.Set("healthStatus", constants.UnHealthyStatus)
+		telemetry.Data.CLInfo.Healthy = false
 		log.Error(err, "Error reconciling clusterlogging instance")
 		instance.Status.Conditions.SetCondition(loggingv1.CondInvalid("error reconciling clusterlogging instance: %v", err))
 	} else {
@@ -151,7 +148,7 @@ func (r *ReconcileClusterLogging) updateStatus(instance *loggingv1.ClusterLoggin
 			return reconcile.Result{RequeueAfter: time.Second * 1}, nil
 		}
 
-		telemetry.Data.CLInfo.Set("healthStatus", constants.UnHealthyStatus)
+		telemetry.Data.CLInfo.Healthy = false
 		log.Error(err, "clusterlogging-controller error updating status")
 		return ctrl.Result{}, err
 	}

@@ -20,7 +20,7 @@ func TestCart(t *testing.T) {
 var _ = Describe("telemetry", func() {
 
 	var (
-		data          = NewTD()
+		data          = newTelemetryData()
 		mdir          string
 		smYamlFile    string
 		CLinfo        = data.CLInfo
@@ -51,7 +51,7 @@ var _ = Describe("telemetry", func() {
 				Expect(sm).To(MatchYAML(msm))
 			})
 			It("Info metric must have version, managedStatus, healthStatus as default values", func() {
-				Expect(CLinfo.Get("version")).To(Equal(version.Version))
+				Expect(CLinfo.Version).To(Equal(version.Version))
 				Expect(CLFinputType.Get("application")).To(Equal("0"))
 				Expect(CLFoutputType.Get("elasticsearch")).To(Equal("0"))
 				Expect(LFMEInfo.Get(Deployed)).To(Equal("0"))

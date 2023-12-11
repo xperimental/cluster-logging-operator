@@ -18,38 +18,32 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/tools/record"
 	client "sigs.k8s.io/controller-runtime/pkg/client"
-
-	"github.com/openshift/cluster-logging-operator/internal/constants"
 )
 
 func Reconcile(cl *logging.ClusterLogging, forwarder *logging.ClusterLogForwarder, requestClient client.Client, reader client.Reader, r record.EventRecorder, clusterVersion, clusterID string, resourceNames *factory.ForwarderResourceNames) (err error) {
 	log.V(3).Info("Reconciling", "ClusterLogging", cl, "ClusterLogForwarder", forwarder)
 	clusterLoggingRequest := NewClusterLoggingRequest(cl, forwarder, requestClient, reader, r, clusterVersion, clusterID, resourceNames)
 
-	telemetry.CancelMetrics()
-	defer telemetry.UpdateMetrics()
-
 	if !clusterLoggingRequest.isManaged() {
 		// if cluster is set to unmanaged then set managedStatus as 0
-		telemetry.Data.CLInfo.Set("managedStatus", constants.UnManagedStatus)
+		telemetry.Data.CLInfo.Managed = false
 		return nil
 	}
 	// CL is managed by default set it as 1
-	telemetry.Data.CLInfo.Set("managedStatus", constants.ManagedStatus)
-	telemetry.UpdateInfofromCL(*clusterLoggingRequest.Cluster)
+	telemetry.Data.CLInfo.Managed = true
 
 	if clusterLoggingRequest.IsLegacyDeployment() {
 
 		if clusterLoggingRequest.IncludesManagedStorage() {
 			// Reconcile Log Store
 			if err = clusterLoggingRequest.CreateOrUpdateLogStore(); err != nil {
-				telemetry.Data.CLInfo.Set("healthStatus", constants.UnHealthyStatus)
+				telemetry.Data.CLInfo.Healthy = false
 				return fmt.Errorf("unable to create or update logstore for %q: %v", clusterLoggingRequest.Cluster.Name, err)
 			}
 
 			// Reconcile Visualization
 			if err = clusterLoggingRequest.CreateOrUpdateVisualization(); err != nil {
-				telemetry.Data.CLInfo.Set("healthStatus", constants.UnHealthyStatus)
+				telemetry.Data.CLInfo.Healthy = false
 				return fmt.Errorf("unable to create or update visualization for %q: %v", clusterLoggingRequest.Cluster.Name, err)
 			}
 
@@ -65,8 +59,8 @@ func Reconcile(cl *logging.ClusterLogging, forwarder *logging.ClusterLogForwarde
 
 	// Reconcile Collection
 	if err = clusterLoggingRequest.CreateOrUpdateCollection(); err != nil {
-		telemetry.Data.CLInfo.Set("healthStatus", constants.UnHealthyStatus)
-		telemetry.Data.CollectorErrorCount.Inc("CollectorErrorCount")
+		telemetry.Data.CLInfo.Healthy = false
+		telemetry.Data.CollectorErrorCount++
 		return fmt.Errorf("unable to create or update collection for %q: %v", clusterLoggingRequest.Cluster.Name, err)
 	}
 
@@ -76,7 +70,7 @@ func Reconcile(cl *logging.ClusterLogging, forwarder *logging.ClusterLogForwarde
 	}
 
 	//if there is no early exit from reconciler then new CL spec is applied successfully hence healthStatus is set to true or 1
-	telemetry.Data.CLInfo.Set("healthStatus", constants.HealthyStatus)
+	telemetry.Data.CLInfo.Healthy = true
 	telemetry.UpdateInfofromCLF(*clusterLoggingRequest.Forwarder)
 	return nil
 }
@@ -85,7 +79,7 @@ func removeCollectorAndUpdate(clusterRequest ClusterLoggingRequest) {
 	log.V(3).Info("forwarder not found and logStore not found so removing collector")
 	if err := clusterRequest.removeCollector(); err != nil {
 		log.Error(err, "Error removing collector")
-		telemetry.Data.CLInfo.Set("healthStatus", constants.UnHealthyStatus)
+		telemetry.Data.CLInfo.Healthy = false
 	}
 }
 
@@ -101,7 +95,7 @@ func removeManagedStorage(clusterRequest ClusterLoggingRequest) {
 				return RemoveFinalizer(clusterRequest.Client, clusterRequest.Cluster.Namespace, clusterRequest.Cluster.Name, identifier)
 			})
 		}} {
-		telemetry.Data.CLInfo.Set("healthStatus", constants.UnHealthyStatus)
+		telemetry.Data.CLInfo.Healthy = false
 		if err := remove(); err != nil && !apierrors.IsNotFound(err) {
 			log.Error(err, "Error removing component")
 		}
@@ -119,6 +113,6 @@ func ReconcileForLogFileMetricExporter(lfmeInstance *loggingv1alpha1.LogFileMetr
 		return err
 	}
 	// Successfully reconciled a LFME, set telemetry to deployed
-	telemetry.SetLFMEMetrics(1)
+	telemetry.Data.LFMEInfo.Deployed = true
 	return nil
 }
