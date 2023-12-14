@@ -9,17 +9,11 @@ import (
 )
 
 const (
-	IsPresent    = "1"
-	IsNotPresent = "0"
-
-	OutputTypeElasticsearch = v1.OutputTypeElasticsearch
-	OutputTypeLoki          = v1.OutputTypeLoki
-
-	ManagedStatus = "managedStatus"
-	HealthStatus  = "healthStatus"
-	VersionNo     = "version"
-	PipelineNo    = "pipelineInfo"
-	Deployed      = "deployed"
+	labelManagedStatus = "managedStatus"
+	labelHealthStatus  = "healthStatus"
+	labelVersion       = "version"
+	labelPipelineInfo  = "pipelineInfo"
+	labelDeployed      = "deployed"
 
 	metricsPrefix     = "log_"
 	defaultOutputName = "default"
@@ -125,36 +119,36 @@ var (
 
 	clusterLoggingInfoDesc = prometheus.NewDesc(
 		metricsPrefix+"logging_info",
-		"Clo version managementState healthState specific metric",
-		[]string{VersionNo, ManagedStatus, HealthStatus}, nil,
+		"Info metric containing general information about installed operator. Value is always 1.",
+		[]string{labelVersion, labelManagedStatus, labelHealthStatus}, nil,
 	)
 	collectorErrorCountDesc = prometheus.NewDesc(
 		metricsPrefix+"collector_error_count_total",
-		"log collector total number of error counts ",
-		[]string{VersionNo}, nil,
+		"Counts the number of errors encountered by the operator reconciling the collector configuration",
+		[]string{labelVersion}, nil,
 	)
 	clusterLogForwarderDesc = prometheus.NewDesc(
 		metricsPrefix+"forwarder_pipeline_info",
-		"Clf healthState and pipelineInfo specific metric",
-		[]string{HealthStatus, PipelineNo}, nil,
+		"Info metric containing information about deployed forwarders. Value is always 1.",
+		[]string{labelHealthStatus, labelPipelineInfo}, nil,
 	)
 
 	forwarderInputInfoDesc = prometheus.NewDesc(
 		"log_forwarder_input_info",
-		"Clf input type specific metric",
+		"Info metric containing information about usage of pre-defined input names. Value is always 1.",
 		forwarderInputTypes, nil,
 	)
 
 	forwarderOutputInfoDesc = prometheus.NewDesc(
 		"log_forwarder_output_info",
-		"Clf output type specific metric",
+		"Info metric containing information about usage of available output types. Value is always 1.",
 		append([]string{defaultOutputName}, forwarderOutputTypes...), nil,
 	)
 
 	logFileMetricExporterInfoDesc = prometheus.NewDesc(
 		"log_file_metric_exporter_info",
-		"LFME health and deployed status specific metric",
-		[]string{Deployed, HealthStatus}, nil,
+		"Info metric containing information about usage the file metric exporter. Value is always 1.",
+		[]string{labelDeployed, labelHealthStatus}, nil,
 	)
 )
 

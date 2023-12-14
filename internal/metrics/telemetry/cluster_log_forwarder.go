@@ -4,7 +4,7 @@ import (
 	logging "github.com/openshift/cluster-logging-operator/apis/logging/v1"
 )
 
-func UpdateInfofromCLF(forwarder logging.ClusterLogForwarder) {
+func UpdateInfoFromCLF(forwarder logging.ClusterLogForwarder) {
 	outputMap := forwarder.Spec.OutputMap()
 
 	activeInputNames := map[string]bool{}

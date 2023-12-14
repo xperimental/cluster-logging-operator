@@ -71,7 +71,7 @@ func Reconcile(cl *logging.ClusterLogging, forwarder *logging.ClusterLogForwarde
 
 	//if there is no early exit from reconciler then new CL spec is applied successfully hence healthStatus is set to true or 1
 	telemetry.Data.CLInfo.Healthy = true
-	telemetry.UpdateInfofromCLF(*clusterLoggingRequest.Forwarder)
+	telemetry.UpdateInfoFromCLF(*clusterLoggingRequest.Forwarder)
 	return nil
 }
 

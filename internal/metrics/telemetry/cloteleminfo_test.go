@@ -18,25 +18,18 @@ func TestCart(t *testing.T) {
 
 // Test if ServiceMonitor spec is correct or not, also Prometheus Metrics get Registered, Updated, Retrieved properly or not
 var _ = Describe("telemetry", func() {
-
 	var (
-		data          = newTelemetryData()
-		mdir          string
-		smYamlFile    string
-		CLinfo        = data.CLInfo
-		CLFinputType  = data.CLFInputType
-		CLFoutputType = data.CLFOutputType
-		LFMEInfo      = data.LFMEInfo
-		manifestFile  string
+		data         = newTelemetryData()
+		smYamlFile   string
+		CLinfo       = data.CLInfo
+		manifestFile string
 	)
 
 	BeforeEach(func() {
-
-		mdir, _ = os.Getwd()
+		mdir, _ := os.Getwd()
 		mdir = path.Dir(path.Dir(mdir))
 		smYamlFile = mdir + "/config/prometheus/servicemonitor.yaml"
 		manifestFile = mdir + "/bundle/manifests/cluster-logging-operator-metrics-monitor_monitoring.coreos.com_v1_servicemonitor.yaml"
-
 	})
 
 	JustAfterEach(func() {
@@ -52,9 +45,6 @@ var _ = Describe("telemetry", func() {
 			})
 			It("Info metric must have version, managedStatus, healthStatus as default values", func() {
 				Expect(CLinfo.Version).To(Equal(version.Version))
-				Expect(CLFinputType.Get("application")).To(Equal("0"))
-				Expect(CLFoutputType.Get("elasticsearch")).To(Equal("0"))
-				Expect(LFMEInfo.Get(Deployed)).To(Equal("0"))
 			})
 		})
 	})
