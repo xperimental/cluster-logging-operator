@@ -714,13 +714,15 @@ const (
 type ClusterConditions []Condition
 type ElasticsearchClusterConditions []elasticsearch.ClusterCondition
 
+// +kubebuilder:object:root=true
 // +k8s:openapi-gen=true
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:categories=logging,shortName=cl
 // +kubebuilder:printcolumn:name="Management State",JSONPath=".spec.managementState",type=string
-// +kubebuilder:object:root=true
-// +kubebuilder:subresource:status
+// +kubebuilder:webhook:path=/validate-logging-openshift-io-v1-clusterlogging,mutating=false,failurePolicy=fail,sideEffects=None,groups=logging.openshift.io,resources=clusterloggings,verbs=create;update,versions=v1,name=vclusterlogging.logging.openshift.io,admissionReviewVersions=v1
+
 // A Red Hat OpenShift Logging instance. ClusterLogging is the Schema for the clusterloggings API
+//
 // +operator-sdk:csv:customresourcedefinitions:displayName="Cluster Logging",resources={{Pod,v1},{Deployment,v1},{ReplicaSet,v1},{ConfigMap,v1},{Service,v1},{Route,v1},{CronJob,v1},{Role,v1},{RoleBinding,v1},{ServiceAccount,v1},{ServiceMonitor,v1},{persistentvolumeclaims,v1}}
 type ClusterLogging struct {
 	metav1.TypeMeta `json:",inline"`
