@@ -1,3 +1,16 @@
+/*
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package v1
 
 import (
@@ -35,29 +48,18 @@ const (
 	//
 	ConditionReady status.ConditionType = "Ready"
 
-	// Degraded indicates partial service is available.
-	//
-	// Degraded=True means the operands can fulfill some of the `spec`, but not all,
-	// even when Ready=True.
-	//
-	// Degraded=False with Ready=True means the operands are providing full service.
-	//
-	// Degraded=Unknown means the operator is in transition.
-	//
-	ConditionDegraded status.ConditionType = "Degraded"
-
 	ValidationCondition status.ConditionType = "Validation"
 )
 
 const (
 	// Invalid spec is ill-formed in some way, or contains unknown references.
 	ReasonInvalid status.ConditionReason = "Invalid"
+
 	// MissingResources spec refers to resources that can't be located.
 	ReasonMissingResource status.ConditionReason = "MissingResource"
+
 	// Unused spec defines a valid object but it is never used.
 	ReasonUnused status.ConditionReason = "Unused"
-	// Connecting object is unready because a connection is in progress.
-	ReasonConnecting status.ConditionReason = "Connecting"
 
 	ValidationFailureReason status.ConditionReason = "ValidationFailure"
 )

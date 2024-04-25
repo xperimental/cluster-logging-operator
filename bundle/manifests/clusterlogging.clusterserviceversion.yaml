@@ -111,6 +111,66 @@ metadata:
               }
             ]
           }
+        },
+        {
+          "apiVersion": "observability.openshift.io/v1",
+          "kind": "ClusterLogForwarder",
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/component": "collector",
+              "app.kubernetes.io/instance": "log-collector",
+              "app.kubernetes.io/managed-by": "cluster-logging-operator",
+              "app.kubernetes.io/name": "vector",
+              "app.kubernetes.io/part-of": "cluster-logging"
+            },
+            "name": "log-collector",
+            "namespace": "acme-logging"
+          },
+          "spec": {
+            "inputs": [
+              {
+                "infrastructure": {
+                  "sources": [
+                    "container"
+                  ]
+                },
+                "name": "infra-container",
+                "type": "infrastructure"
+              }
+            ],
+            "outputs": [
+              {
+                "name": "rh-loki",
+                "service": {
+                  "authorization": {
+                    "secret": {
+                      "name": "audit-collector-sa-token"
+                    },
+                    "token": {
+                      "key": "token"
+                    }
+                  },
+                  "name": "rh-managed-loki",
+                  "namespace": "openshift-logging"
+                },
+                "type": "lokiStack"
+              }
+            ],
+            "pipelines": [
+              {
+                "inputRefs": [
+                  "infra-container",
+                  "audit"
+                ],
+                "outputRefs": [
+                  "rh-loki"
+                ]
+              }
+            ],
+            "serviceAccount": {
+              "name": "audit-collector-sa"
+            }
+          }
         }
       ]
     capabilities: Seamless Upgrades
@@ -118,7 +178,7 @@ metadata:
     certified: "false"
     console.openshift.io/plugins: '["logging-view-plugin"]'
     containerImage: quay.io/openshift-logging/cluster-logging-operator:latest
-    createdAt: "2024-04-19T15:54:57Z"
+    createdAt: "2024-04-30T18:20:36Z"
     description: The Red Hat OpenShift Logging Operator for OCP provides a means for
       configuring and managing your aggregated logging stack.
     features.operators.openshift.io/cnf: "false"
@@ -138,7 +198,7 @@ metadata:
     operators.openshift.io/valid-subscription: '["OpenShift Kubernetes Engine", "OpenShift
       Container Platform", "OpenShift Platform Plus"]'
     operators.operatorframework.io/builder: operator-sdk-unknown
-    operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
+    operators.operatorframework.io/project_layout: go.kubebuilder.io/v4
     support: AOS Logging (team-logging@redhat.com)
     target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
   labels:
@@ -213,6 +273,205 @@ spec:
         path: pipelines
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:pipelineConditions
+      version: v1
+    - description: "ClusterLogForwarder is an API to configure forwarding logs. \n
+        You configure forwarding by specifying a list of `pipelines`, which forward
+        from a set of named inputs to a set of named outputs. \n ClusterLogForwarder
+        is the Schema for the clusterlogforwarders API"
+      displayName: Cluster Log Forwarder
+      kind: ClusterLogForwarder
+      name: clusterlogforwarders.observability.openshift.io
+      specDescriptors:
+      - description: Define which Nodes the Pods are scheduled on.
+        displayName: Collector Node Selector
+        path: collector.nodeSelector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:selector:core:v1:ConfigMap
+      - description: The resource requirements for the collector
+        displayName: Collector Resource Requirements
+        path: collector.resources
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - description: "Inputs are named filters for log messages to be forwarded. \n
+          There are three built-in inputs named `application`, `infrastructure` and
+          `audit`. You don't need to define inputs here if those are sufficient for
+          your needs. See `inputRefs` for more."
+        displayName: Forwarder Inputs
+        path: inputs
+      - description: MaxRecordsPerSecond is the maximum number of log records allowed
+          per input/output in a pipeline
+        displayName: Max Records Per Second
+        path: inputs[0].application.tuning.rateLimitPerContainer.maxRecordsPerSecond
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:number
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: inputs[0].receiver.tls.cacert.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: inputs[0].receiver.tls.cert.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: inputs[0].receiver.tls.key.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: "Outputs are named destinations for log messages. \n There is
+          a built-in output named `default` which forwards to the default openshift
+          log store. You can define outputs to forward to other stores or log processors,
+          inside or outside the cluster."
+        displayName: Forwarder Outputs
+        path: outputs
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].azureMonitor.authorization.sharedKey.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].cloudwatch.authorization.awsAccessKeyID.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].cloudwatch.authorization.awsSecretAccessKey.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].cloudwatch.authorization.credentials.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].cloudwatch.authorization.roleARN.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].elasticsearch.authorization.password.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].elasticsearch.authorization.token.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].elasticsearch.authorization.username.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].googleCloudLogging.authorization.credentials.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].http.authorization.password.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].http.authorization.token.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].http.authorization.username.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].kafka.authorization.saslMechanisms.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].kafka.authorization.saslPassword.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].kafka.authorization.saslUsername.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].lokiStack.authorization.token.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: MaxRecordsPerSecond is the maximum number of log records allowed
+          per input/output in a pipeline
+        displayName: Max Records Per Second
+        path: outputs[0].rateLimit.maxRecordsPerSecond
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:number
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].splunk.authorization.token.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].tls.resource.cacert.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].tls.resource.cert.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].tls.resource.key.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The key name found in the resource
+        displayName: Key Name
+        path: outputs[0].tls.resource.passphrase.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: Pipelines forward the messages selected by a set of inputs to
+          a set of outputs.
+        displayName: Forwarder Pipelines
+        path: pipelines
+      - description: Name is optional, but must be unique in the `pipelines` list
+          if provided.
+        displayName: Name
+        path: pipelines[0].name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      statusDescriptors:
+      - description: Conditions of the log forwarder.
+        displayName: Forwarder Conditions
+        path: conditions
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.conditions
+      - description: Filters maps filter name to condition of the filter.
+        displayName: Filter Conditions
+        path: filters
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.conditions
+      - description: Inputs maps input name to condition of the input.
+        displayName: Input Conditions
+        path: inputs
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.conditions
+      - description: Outputs maps output name to condition of the output.
+        displayName: Output Conditions
+        path: outputs
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.conditions
+      - description: Pipelines maps pipeline name to condition of the pipeline.
+        displayName: Pipeline Conditions
+        path: pipelines
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes.conditions
       version: v1
     - description: A Red Hat OpenShift Logging instance. ClusterLogging is the Schema
         for the clusterloggings API
