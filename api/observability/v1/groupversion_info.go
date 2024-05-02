@@ -11,8 +11,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 // Package v1 contains API Schema definitions for the observability v1 API group
+//
 // +kubebuilder:object:generate=true
+// +k8s:deepcopy-gen=package,register
 // +groupName=observability.openshift.io
 package v1
 

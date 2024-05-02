@@ -11,6 +11,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package v1
 
 import (
@@ -52,7 +53,7 @@ var (
 	)
 )
 
-// Output defines a destination for log messages.
+// OutputSpec defines a destination for log messages.
 type OutputSpec struct {
 	// Name used to refer to the output from a `pipeline`.
 	//
@@ -69,6 +70,7 @@ type OutputSpec struct {
 	OutputTypeSpec `json:",inline"`
 
 	// TLS contains settings for controlling options on TLS client connections.
+	//
 	// +optional
 	// +nullable
 	TLS *OutputTLSSpec `json:"tls,omitempty"`
@@ -84,6 +86,7 @@ type OutputSpec struct {
 
 	// Tuning parameters for the output.  Specifying these parameters will alter the characteristics
 	// of log forwarder which may be different from its behavior without the tuning.
+	//
 	// +optional
 	// +nullable
 	Tuning *BaseOutputTuningSpec `json:"tuning,omitempty"`
@@ -93,21 +96,25 @@ type OutputResourceSpec struct {
 	ResourceTypeSpec `json:",inline"`
 
 	// The CertificateAuthority to use.  Assumed to be ca-bundle.crt if not defined
+	//
 	// +optional
 	// +nullable
 	CACert *PriorityKeySpec `json:"cacert,omitempty"`
 
 	// The public certificate to use in PEM format. Assumed to be tls.crt if not defined
+	//
 	// +optional
 	// +nullable
 	Cert *KeySpec `json:"cert,omitempty"`
 
 	// The private certificate  to use in PEM format. Assumed to be tls.key if not defined
+	//
 	// +optional
 	// +nullable
 	Key *KeySpec `json:"key,omitempty"`
 
 	// The TLS passphrase.  Assumed to be passphrase if not defined
+	//
 	// +optional
 	// +nullable
 	Passphrase *KeySpec `json:"passphrase,omitempty"`
@@ -115,18 +122,20 @@ type OutputResourceSpec struct {
 
 // OutputTLSSpec contains options for TLS connections that are agnostic to the output type.
 type OutputTLSSpec struct {
-
 	// Resource is the secret or configmap to search for
+	//
 	// +required
 	Resource OutputResourceSpec `json:"resource,omitempty"`
 
 	// If InsecureSkipVerify is true, then the TLS client will be configured to ignore errors with certificates.
 	//
 	// This option is *not* recommended for production configurations.
+	//
 	// +optional
 	InsecureSkipVerify bool `json:"insecureSkipVerify,omitempty"`
 
 	// TLSSecurityProfile is the security profile to apply to the output connection
+	//
 	// +optional
 	TLSSecurityProfile *openshiftv1.TLSSecurityProfile `json:"securityProfile,omitempty"`
 }
@@ -182,11 +191,11 @@ type CompressionSpec struct {
 type DeliverySpec struct {
 	// Delivery mode for log forwarding.
 	//
-	// - AtLeastOnce (default): if the forwarder crashes or is re-started, any logs that were read before
-	//   the crash but not sent to their destination will be re-read and re-sent. Note it is possible
-	//   that some logs are duplicated in the event of a crash - log records are delivered at-least-once.
-	// - AtMostOnce: The forwarder makes no effort to recover logs lost during a crash. This mode may give
-	//   better throughput, but could result in more log loss.
+	//  - AtLeastOnce (default): if the forwarder crashes or is re-started, any logs that were read before
+	//    the crash but not sent to their destination will be re-read and re-sent. Note it is possible
+	//    that some logs are duplicated in the event of a crash - log records are delivered at-least-once.
+	//  - AtMostOnce: The forwarder makes no effort to recover logs lost during a crash. This mode may give
+	//    better throughput, but could result in more log loss.
 	//
 	// +optional
 	// +kubebuilder:validation:Enum:=AtLeastOnce;AtMostOnce
@@ -240,11 +249,13 @@ type AuthorizationSpec struct {
 	v1.LocalObjectReference `json:",inline"`
 
 	// Token is the bearer token to use for authorization requests. Assumed to be 'token' if not defined
+	//
 	// +optional
 	// +nullable
 	Token *PriorityKeySpec `json:"token,omitempty"`
 
 	// Username.  Assumed to be 'username' if not defined
+	//
 	// +optional
 	// +nullable
 	Username *KeySpec `json:"username,omitempty"`
@@ -259,6 +270,7 @@ type AzureMonitorAuthorizationSpec struct {
 	v1.LocalObjectReference `json:",inline"`
 
 	// SharedKey is the `shared_key`
+	//
 	// +optional
 	// +nullable
 	SharedKey *KeySpec `json:"sharedKey,omitempty"`
@@ -266,29 +278,33 @@ type AzureMonitorAuthorizationSpec struct {
 
 type AzureMonitor struct {
 	// Authorization specs authorization for communicating with the receiver
+	//
 	// +required
 	Authorization AzureMonitorAuthorizationSpec `json:"authorization,omitempty"`
 
-	//CustomerId che unique identifier for the Log Analytics workspace.
-	//https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-collector-api?tabs=powershell#request-uri-parameters
+	// CustomerId che unique identifier for the Log Analytics workspace.
+	// https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-collector-api?tabs=powershell#request-uri-parameters
 	CustomerId string `json:"customerId,omitempty"`
 
-	//LogType the record type of the data that is being submitted.
-	//Can only contain letters, numbers, and underscores (_), and may not exceed 100 characters.
-	//https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-collector-api?tabs=powershell#request-headers
+	// LogType the record type of the data that is being submitted.
+	// Can only contain letters, numbers, and underscores (_), and may not exceed 100 characters.
+	// https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-collector-api?tabs=powershell#request-headers
 	LogType string `json:"logType,omitempty"`
 
-	//AzureResourceId the Resource ID of the Azure resource the data should be associated with.
-	//https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-collector-api?tabs=powershell#request-headers
+	// AzureResourceId the Resource ID of the Azure resource the data should be associated with.
+	// https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-collector-api?tabs=powershell#request-headers
+	//
 	// +optional
 	AzureResourceId string `json:"azureResourceId,omitempty"`
 
-	//Host alternative host for dedicated Azure regions. (for example for China region)
-	//https://docs.azure.cn/en-us/articles/guidance/developerdifferences#check-endpoints-in-azure
+	// Host alternative host for dedicated Azure regions. (for example for China region)
+	// https://docs.azure.cn/en-us/articles/guidance/developerdifferences#check-endpoints-in-azure
+	//
 	// +optional
 	Host string `json:"host,omitempty"`
 
 	// Tuning specs tuning for the output
+	//
 	// +optional
 	// +nullable
 	Tuning *BaseOutputTuningSpec `json:"tuning,omitempty"`
@@ -298,22 +314,26 @@ type CloudwatchAuthorizationSpec struct {
 	v1.LocalObjectReference `json:",inline"`
 
 	// AWSAccessKeyID. Assumed to be `aws_secret_access_key` if not defined
+	//
 	// +optional
 	// +nullable
 	AWSAccessKeyID *KeySpec `json:"awsAccessKeyID,omitempty"`
 
 	// AWSSecretAccessKey. Assumed to be `aws_access_key_id` if not defined
+	//
 	// +optional
 	// +nullable
 	AWSSecretAccessKey *KeySpec `json:"awsSecretAccessKey,omitempty"`
 
 	// Credentials specifies the `credentials`  for STS enabled clusters.  Assumed to be 'credentials' if not defined
+	//
 	// +optional
 	// +nullable
 	Credentials *KeySpec `json:"credentials,omitempty"`
 
 	// RoleArn specifies the `role_arn specifying a properly formatted role arn for STS enabled clusters
-	// Or for sts-enabled clusters `credentials` or `role_arn` key specifying a properly formatted role arn
+	// or for sts-enabled clusters `credentials` or `role_arn` key specifying a properly formatted role arn
+	//
 	// +optional
 	// +nullable
 	RoleArn *KeySpec `json:"roleARN,omitempty"`
@@ -323,7 +343,7 @@ type CloudwatchTuningSpec struct {
 	BaseOutputTuningSpec `json:",inline"`
 
 	// Compression causes data to be compressed before sending over the network.
-	// It is an error if the compression type is not supported by the  output.
+	// It is an error if the compression type is not supported by the output.
 	//
 	// +optional
 	// +kubebuilder:validation:Enum:=gzip;none;snappy;zlib;zstd;lz4
@@ -333,12 +353,13 @@ type CloudwatchTuningSpec struct {
 
 // Cloudwatch provides configuration for the output type `cloudwatch`
 type Cloudwatch struct {
-
 	// Authorization specs authorization for communicating with the receiver
+	//
 	// +required
 	Authorization CloudwatchAuthorizationSpec `json:"authorization,omitempty"`
 
 	// Tuning specs tuning for the output
+	//
 	// +optional
 	// +nullable
 	Tuning *CloudwatchTuningSpec `json:"tuning,omitempty"`
@@ -346,15 +367,17 @@ type Cloudwatch struct {
 	// +required
 	Region string `json:"region,omitempty"`
 
-	//GroupBy defines the strategy for grouping logstreams
+	// GroupBy defines the strategy for grouping logstreams
+	//
 	// +required
-	//+kubebuilder:validation:Enum:=logType;namespaceName;namespaceUUID
+	// +kubebuilder:validation:Enum:=logType;namespaceName;namespaceUUID
 	GroupBy LogGroupByType `json:"groupBy,omitempty"`
 
-	//GroupPrefix Add this prefix to all group names.
-	//  Useful to avoid group name clashes if an AWS account is used for multiple clusters and
-	//  used verbatim (e.g. "" means no prefix)
-	//  The default prefix is cluster-name/log-type
+	// GroupPrefix Add this prefix to all group names.
+	//
+	// Useful to avoid group name clashes if an AWS account is used for multiple clusters and
+	// used verbatim (e.g. "" means no prefix). The default prefix is cluster-name/log-type
+	//
 	// +optional
 	GroupPrefix *string `json:"groupPrefix,omitempty"`
 }
@@ -363,7 +386,7 @@ type Cloudwatch struct {
 type LogGroupByType string
 
 const (
-	//LogGroupByLogType is the strategy to group logs by source(e.g. app, infra)
+	// LogGroupByLogType is the strategy to group logs by source(e.g. app, infra)
 	LogGroupByLogType LogGroupByType = "logType"
 
 	// LogGroupByNamespaceName is the strategy to use for grouping logs by namespace. Infrastructure and
@@ -376,14 +399,14 @@ const (
 )
 
 type IndexSpec struct {
-	// +optional
-	// +nullable
 	// Index is the tenant for the logs. This supports template syntax
 	// to allow dynamic per-event values
+	//
+	// +optional
+	// +nullable
 	Index string `json:"index,omitempty"`
 }
 
-// ElasticsearchAuthorizationSpec
 type ElasticsearchAuthorizationSpec struct {
 	AuthorizationSpec `json:",inline"`
 }
@@ -392,6 +415,7 @@ type ElasticsearchTuningSpec struct {
 	BaseOutputTuningSpec `json:",inline"`
 
 	// Compression causes data to be compressed before sending over the network.
+	//
 	// +optional
 	// +kubebuilder:validation:Enum:=none;gzip;zlib;zstd
 	// +kubebuilder:default:=none
@@ -400,10 +424,12 @@ type ElasticsearchTuningSpec struct {
 
 type Elasticsearch struct {
 	// Authorization specs authorization for communicating with the receiver
+	//
 	// +required
 	Authorization ElasticsearchAuthorizationSpec `json:"authorization,omitempty"`
 
 	// Tuning specs tuning for the output
+	//
 	// +optional
 	// +nullable
 	Tuning *ElasticsearchTuningSpec `json:"tuning,omitempty"`
@@ -413,6 +439,7 @@ type Elasticsearch struct {
 
 	// Version specifies the version of Elasticsearch to be used.
 	// Must be one of: 6-8, where 8 is the default
+	//
 	// +kubebuilder:validation:Minimum:=6
 	// +optional
 	Version int `json:"version,omitempty"`
@@ -421,7 +448,9 @@ type Elasticsearch struct {
 type GoogleCloudLoggingAuthorizationSpec struct {
 	v1.LocalObjectReference `json:",inline"`
 
-	// Credentials path to `google-application-credentials.json`. Assumed to be `google-application-credentials.json` if not defined
+	// Credentials path to `google-application-credentials.json`.
+	// Assumed to be `google-application-credentials.json` if not defined.
+	//
 	// +optional
 	// +nullable
 	Credentials *KeySpec `json:"credentials,omitempty"`
@@ -431,6 +460,7 @@ type GoogleCloudLoggingAuthorizationSpec struct {
 // Exactly one of billingAccountID, organizationID, folderID, or projectID must be set.
 type GoogleCloudLogging struct {
 	// Authorization specs authorization for communicating with the receiver
+	//
 	// +optional
 	Authorization GoogleCloudLoggingAuthorizationSpec `json:"authorization,omitempty"`
 
@@ -446,7 +476,7 @@ type GoogleCloudLogging struct {
 	// +optional
 	ProjectID string `json:"projectId,omitempty"`
 
-	//LogID is the log ID to which to publish logs. This identifies log stream.
+	// LogID is the log ID to which to publish logs. This identifies log stream.
 	LogID string `json:"logId,omitempty"`
 }
 
@@ -454,6 +484,7 @@ type HttpTuningSpec struct {
 	BaseOutputTuningSpec `json:",inline"`
 
 	// Compression causes data to be compressed before sending over the network.
+	//
 	// +optional
 	// +kubebuilder:validation:Enum:=none;gzip;snappy;zlib
 	// +kubebuilder:default:=none
@@ -463,10 +494,12 @@ type HttpTuningSpec struct {
 // Http provided configuration for sending json encoded logs to a generic http endpoint.
 type Http struct {
 	// Authorization specs authorization for communicating with the receiver
+	//
 	// +required
 	Authorization AuthorizationSpec `json:"authorization,omitempty"`
 
 	// Tuning specs tuning for the output
+	//
 	// +optional
 	// +nullable
 	Tuning *HttpTuningSpec `json:"tuning,omitempty"`
@@ -474,14 +507,17 @@ type Http struct {
 	URLSpec `json:",inline"`
 
 	// Headers specify optional headers to be sent with the request
+	//
 	// +optional
 	Headers map[string]string `json:"headers,omitempty"`
 
 	// Timeout specifies the Http request timeout in seconds. If not set, 10secs is used.
+	//
 	// +optional
 	Timeout int `json:"timeout,omitempty"`
 
 	// Method specifies the Http method to be used for sending logs. If not set, 'POST' is used.
+	//
 	// +kubebuilder:validation:Enum:=GET;HEAD;POST;PUT;DELETE;OPTIONS;TRACE;PATCH
 	// +optional
 	Method string `json:"method,omitempty"`
@@ -496,6 +532,7 @@ type KafkaTuningSpec struct {
 	MaxWrite *resource.Quantity `json:"maxWrite,omitempty"`
 
 	// Compression causes data to be compressed before sending over the network.
+	//
 	// +optional
 	// +kubebuilder:validation:Enum:=none;snappy;zstd;lz4
 	// +kubebuilder:default:=none
@@ -507,20 +544,24 @@ type KafkaAuthorizationSpec struct {
 	v1.LocalObjectReference `json:",inline"`
 
 	// SASLEnabled assumed key sasl.enable and disabled by default. Override as needed
+	//
 	// +optional
 	SASLEnabled bool `json:"saslEnabled,omitempty"`
 
 	// SASLUsername assumed key username. Override as needed
+	//
 	// +optional
 	// +nullable
 	SASLUsername *KeySpec `json:"saslUsername,omitempty"`
 
 	// SASLPassword assumed key password. Override as needed
+	//
 	// +optional
 	// +nullable
 	SASLPassword *KeySpec `json:"saslPassword,omitempty"`
 
 	// SASLMechanisms assumed key sasl.mechanisms. Override as needed
+	//
 	// +optional
 	// +nullable
 	SASLMechanisms *KeySpec `json:"saslMechanisms,omitempty"`
@@ -530,10 +571,12 @@ type KafkaAuthorizationSpec struct {
 type Kafka struct {
 
 	// Authorization specs authorization for communicating with the receiver
+	//
 	// +required
 	Authorization KafkaAuthorizationSpec `json:"authorization,omitempty"`
 
 	// Tuning specs tuning for the output
+	//
 	// +optional
 	// +nullable
 	Tuning *KafkaTuningSpec `json:"tuning,omitempty"`
@@ -560,6 +603,7 @@ type LokiAuthorizationSpec struct {
 	v1.LocalObjectReference `json:",inline"`
 
 	// Token is the bearer token to use for authorization requests
+	//
 	// +optional
 	Token *KeySpec `json:"token,omitempty"`
 }
@@ -568,6 +612,7 @@ type LokiTuningSpec struct {
 	BaseOutputTuningSpec `json:",inline"`
 
 	// Compression causes data to be compressed before sending over the network.
+	//
 	// +optional
 	// +kubebuilder:validation:Enum:=none;gzip;snappy
 	// +kubebuilder:default:=none
@@ -577,10 +622,12 @@ type LokiTuningSpec struct {
 // LokiStack provides optional extra properties for `type: loki`
 type LokiStack struct {
 	// Authorization specs authorization for communicating with the receiver
+	//
 	// +required
 	Authorization LokiAuthorizationSpec `json:"authorization,omitempty"`
 
 	// Tuning specs tuning for the output
+	//
 	// +optional
 	Tuning *LokiTuningSpec `json:"tuning,omitempty"`
 
@@ -606,6 +653,7 @@ type SplunkAuthorizationSpec struct {
 	v1.LocalObjectReference `json:",inline"`
 
 	// Token is the splunk HEC token
+	//
 	// +optional
 	Token *KeySpec `json:"token,omitempty"`
 }
@@ -618,10 +666,12 @@ type SplunkTuningSpec struct {
 // Provides optional extra properties for `type: splunk_hec` ('splunk_hec_logs' after Vector 0.23
 type Splunk struct {
 	// Authorization specs authorization for communicating with the receiver
+	//
 	// +required
 	Authorization SplunkAuthorizationSpec `json:"authorization,omitempty"`
 
 	// Tuning specs tuning for the output
+	//
 	// +optional
 	// +nullable
 	Tuning *SplunkTuningSpec `json:"tuning,omitempty"`
@@ -682,20 +732,6 @@ type Syslog struct {
 	//
 	// +optional
 	AddLogSource bool `json:"addLogSource,omitempty"`
-
-	//TODO: Only publicly support RFC5424 which is a super set?
-	//// Rfc specifies the rfc to be used for sending syslog
-	////
-	//// Rfc values can be one of:
-	////  - RFC3164 (https://tools.ietf.org/html/rfc3164)
-	////  - RFC5424 (https://tools.ietf.org/html/rfc5424)
-	////
-	//// If unspecified, RFC5424 will be assumed.
-	////
-	//// +kubebuilder:validation:Enum:=RFC3164;RFC5424
-	//// +kubebuilder:default:=RFC5424
-	//// +optional
-	//RFC string `json:"rfc,omitempty"`
 
 	// AppName is APP-NAME part of the syslog-msg header
 	//

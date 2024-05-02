@@ -11,6 +11,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package v1
 
 import auditv1 "k8s.io/apiserver/pkg/apis/audit/v1"
@@ -61,7 +62,6 @@ import auditv1 "k8s.io/apiserver/pkg/apis/audit/v1"
 // [Kube Audit Policy]: https://kubernetes.io/docs/reference/config-api/apiserver-audit.v1/#audit-k8s-io-v1-Policy
 // [Kubernetes Auditing]: https://kubernetes.io/docs/tasks/debug/debug-cluster/audit/
 type KubeAPIAudit struct {
-
 	// Rules specify the audit Level a request should be recorded at.
 	// A request may match multiple rules, in which case the FIRST matching rule is used.
 	// PolicyRules are strictly ordered.
@@ -71,6 +71,7 @@ type KubeAPIAudit struct {
 
 	// OmitStages is a list of stages for which no events are created.
 	// Note that this can also be specified per rule in which case the union of both are omitted.
+	//
 	// +optional
 	OmitStages []auditv1.Stage `json:"omitStages,omitempty"`
 
@@ -78,7 +79,7 @@ type KubeAPIAudit struct {
 	// If this field is missing or null, the default value used is [404, 409, 422, 429]
 	// (NotFound, Conflict, UnprocessableEntity, TooManyRequests)
 	// If it is the empty list [], then no status codes are omitted.
-	// Otherwise this field should be a list of integer status codes to omit.
+	// Otherwise, this field should be a list of integer status codes to omit.
 	//
 	// +optional
 	OmitResponseCodes *[]int `json:"omitResponseCodes,omitempty"`

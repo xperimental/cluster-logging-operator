@@ -11,6 +11,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package v1
 
 import (
@@ -65,6 +66,7 @@ type InputSpec struct {
 	Audit *Audit `json:"audit,omitempty"`
 
 	// Receiver to receive logs from non-cluster sources.
+	//
 	// +optional
 	// +nullable
 	Receiver *ReceiverSpec `json:"receiver,omitempty"`
@@ -95,6 +97,7 @@ type Application struct {
 	Selector *LabelSelector `json:"selector,omitempty"`
 
 	// Tuning is the container input tuning spec for this container sources
+	//
 	// +optional
 	// +nullable
 	Tuning *ContainerInputTuningSpec `json:"tuning,omitempty"`
@@ -133,17 +136,16 @@ type NamespaceContainerSpec struct {
 // * container workloads deployed to namespaces: default, kube*, openshift*
 // * journald logs from cluster nodes
 type Infrastructure struct {
-
 	// Sources defines the list of infrastructure sources to collect.
 	// This field is optional and omission results in the collection of all infrastructure sources.
-	//  Valid sources are: node, container
+	//
+	// Valid sources are: node, container
 	//
 	// +optional
 	Sources []string `json:"sources,omitempty"`
 }
 
 const (
-
 	// InfrastructureSourceNode are journald logs from the node
 	InfrastructureSourceNode string = "node"
 
@@ -165,7 +167,6 @@ type Audit struct {
 }
 
 const (
-
 	// AuditSourceKube are audit logs from kubernetes API servers
 	AuditSourceKube string = "kubeAPI"
 
@@ -193,18 +194,20 @@ var ReservedInputReceiverNames = sets.NewString(ReceiverTypeHttp, ReceiverTypeSy
 
 // ReceiverSpec is a union of input Receiver types.
 type ReceiverSpec struct {
-
 	// Type of Receiver plugin.
+	//
 	// +kubebuilder:validation:Enum:=http;syslog
 	// +required
 	Type string `json:"type,omitempty"`
 
 	// TLS contains settings for controlling options of TLS connections.
+	//
 	// +optional
 	// +nullable
 	TLS *InputTLSSpec `json:"tls,omitempty"`
 
 	// Port the Receiver listens on. It must be a value between 1024 and 65535
+	//
 	// +kubebuilder:default:=8443
 	// +kubebuilder:validation:Minimum:=1024
 	// +kubebuilder:validation:Maximum:=65535
@@ -218,7 +221,6 @@ type ReceiverSpec struct {
 
 // HTTPReceiver receives encoded logs as a HTTP endpoint.
 type HTTPReceiver struct {
-
 	// Format is the format of incoming log data.
 	//
 	// +kubebuilder:validation:Enum:=kubeAPIAudit
@@ -231,16 +233,19 @@ type InputTLSSpec struct {
 	ResourceTypeSpec `json:",inline"`
 
 	// The CertificateAuthority to use. Assume ca-bundle.crt or override
+	//
 	// +optional
 	// +nullable
 	CACert *PriorityKeySpec `json:"cacert,omitempty"`
 
 	// The public certificate to use in PEM format. Assume tls.crt or override
+	//
 	// +optional
 	// +nullable
 	Cert *KeySpec `json:"cert,omitempty"`
 
 	// The private certificate  to use in PEM format. Assume tls.key or override
+	//
 	// +optional
 	// +nullable
 	Key *KeySpec `json:"key,omitempty"`

@@ -11,6 +11,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package v1
 
 import (
@@ -22,6 +23,7 @@ import (
 )
 
 // Aliases for convenience
+
 type Condition = status.Condition
 type ConditionType = status.ConditionType
 type ConditionReason = status.ConditionReason
@@ -34,7 +36,7 @@ func NewCondition(t status.ConditionType, s corev1.ConditionStatus, r status.Con
 }
 
 const (
-	// Ready indicates the service is ready.
+	// ConditionReady indicates the service is ready.
 	//
 	// Ready=True means the operands are running and providing some service.
 	// See the Degraded condition to distinguish full service from partial service.
@@ -42,26 +44,26 @@ const (
 	// Ready=False means the operands cannot provide any service, and
 	// the operator cannot recover without some external change. Either
 	// the spec is invalid, or there is some environmental problem that is
-	// outside of the the operator's control.
+	// outside the operator's control.
 	//
 	// Ready=Unknown means the operator is in transition.
-	//
 	ConditionReady status.ConditionType = "Ready"
 
 	ValidationCondition status.ConditionType = "Validation"
 )
 
 const (
-	// Invalid spec is ill-formed in some way, or contains unknown references.
+	// ReasonInvalid is used when the spec is ill-formed in some way, or contains unknown references.
 	ReasonInvalid status.ConditionReason = "Invalid"
 
-	// MissingResources spec refers to resources that can't be located.
+	// ReasonMissingResource is used when the spec refers to resources that can't be located.
 	ReasonMissingResource status.ConditionReason = "MissingResource"
 
-	// Unused spec defines a valid object but it is never used.
+	// ReasonUnused is used when the spec defines a valid object, but it is never used.
 	ReasonUnused status.ConditionReason = "Unused"
 
-	ValidationFailureReason status.ConditionReason = "ValidationFailure"
+	// ReasonValidationFailure is used when a validation failed.
+	ReasonValidationFailure status.ConditionReason = "ValidationFailure"
 )
 
 // SetCondition returns true if the condition changed or is new.
