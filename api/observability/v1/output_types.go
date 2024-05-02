@@ -92,49 +92,40 @@ type OutputSpec struct {
 	Tuning *BaseOutputTuningSpec `json:"tuning,omitempty"`
 }
 
-type OutputResourceSpec struct {
-	ResourceTypeSpec `json:",inline"`
-
-	// The CertificateAuthority to use.  Assumed to be ca-bundle.crt if not defined
-	//
-	// +optional
-	// +nullable
-	CACert *PriorityKeySpec `json:"cacert,omitempty"`
-
-	// The public certificate to use in PEM format. Assumed to be tls.crt if not defined
-	//
-	// +optional
-	// +nullable
-	Cert *KeySpec `json:"cert,omitempty"`
-
-	// The private certificate  to use in PEM format. Assumed to be tls.key if not defined
-	//
-	// +optional
-	// +nullable
-	Key *KeySpec `json:"key,omitempty"`
-
-	// The TLS passphrase.  Assumed to be passphrase if not defined
-	//
-	// +optional
-	// +nullable
-	Passphrase *KeySpec `json:"passphrase,omitempty"`
-}
-
 // OutputTLSSpec contains options for TLS connections that are agnostic to the output type.
 type OutputTLSSpec struct {
-	// Resource is the secret or configmap to search for
+	// CA can be used to specify a custom list of trusted certificate authorities.
 	//
-	// +required
-	Resource OutputResourceSpec `json:"resource,omitempty"`
+	// +optional
+	// +nullable
+	CA *ConfigMapOrSecretKey `json:"ca,omitempty"`
 
-	// If InsecureSkipVerify is true, then the TLS client will be configured to ignore errors with certificates.
+	// Certificate points to the client certificate to use.
+	//
+	// +optional
+	// +nullable
+	Certificate *ConfigMapOrSecretKey `json:"certificate,omitempty"`
+
+	// Key points to the private key of the client certificate.
+	//
+	// +optional
+	// +nullable
+	Key *SecretKey `json:"key,omitempty"`
+
+	// Passphrase can be used to set a TLS passphrase.
+	//
+	// +optional
+	// +nullable
+	Passphrase *SecretKey `json:"passphrase,omitempty"`
+
+	// If InsecureSkipVerify is true, then the TLS client will be configured to skip validating server certificates.
 	//
 	// This option is *not* recommended for production configurations.
 	//
 	// +optional
 	InsecureSkipVerify bool `json:"insecureSkipVerify,omitempty"`
 
-	// TLSSecurityProfile is the security profile to apply to the output connection
+	// TLSSecurityProfile is the security profile to apply to the output connection.
 	//
 	// +optional
 	TLSSecurityProfile *openshiftv1.TLSSecurityProfile `json:"securityProfile,omitempty"`

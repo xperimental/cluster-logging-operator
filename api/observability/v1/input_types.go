@@ -230,23 +230,21 @@ type HTTPReceiver struct {
 
 // InputTLSSpec contains options for TLS connections that are agnostic to the input type.
 type InputTLSSpec struct {
-	ResourceTypeSpec `json:",inline"`
-
-	// The CertificateAuthority to use. Assume ca-bundle.crt or override
+	// CA can be used to specify a custom list of trusted certificate authorities.
 	//
 	// +optional
 	// +nullable
-	CACert *PriorityKeySpec `json:"cacert,omitempty"`
+	CA *ConfigMapOrSecretKey `json:"ca,omitempty"`
 
-	// The public certificate to use in PEM format. Assume tls.crt or override
+	// Certificate points to the server certificate to use.
 	//
 	// +optional
 	// +nullable
-	Cert *KeySpec `json:"cert,omitempty"`
+	Certificate *ConfigMapOrSecretKey `json:"certificate,omitempty"`
 
-	// The private certificate  to use in PEM format. Assume tls.key or override
+	// Key points to the private key of the server certificate.
 	//
 	// +optional
 	// +nullable
-	Key *KeySpec `json:"key,omitempty"`
+	Key *SecretKey `json:"key,omitempty"`
 }

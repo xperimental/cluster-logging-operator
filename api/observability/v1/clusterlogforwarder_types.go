@@ -152,6 +152,40 @@ type ResourceTypeSpec struct {
 	Secret *corev1.LocalObjectReference `json:"secret,omitempty"`
 }
 
+// ConfigMapOrSecretKey encodes a reference to a single field in either a ConfigMap or Secret in the same namespace.
+type ConfigMapOrSecretKey struct {
+	// Name of the key used to get the value in either the referenced ConfigMap or Secret.
+	//
+	// +required
+	// +kubebuilder:validation:minLength:=1
+	// +kubebuilder:validation:Required
+	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Key Name",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}
+	Key string `json:"key,omitempty"`
+
+	// Use ConfigMap if the value should be sourced from a ConfigMap in the same namespace.
+	ConfigMap *corev1.LocalObjectReference `json:"configMap,omitempty"`
+
+	// Use Secret if the value should be sourced from a Secret in the same namespace.
+	Secret *corev1.LocalObjectReference `json:"secret,omitempty"`
+}
+
+// SecretKey encodes a reference to a single key in a Secret in the same namespace.
+type SecretKey struct {
+	// Name of the key used to get the value in either the referenced ConfigMap or Secret.
+	//
+	// +required
+	// +kubebuilder:validation:minLength:=1
+	// +kubebuilder:validation:Required
+	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Key Name",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}
+	Key string `json:"key,omitempty"`
+
+	// Use Secret if the value should be sourced from a Secret in the same namespace.
+	//
+	// +required
+	// +kubebuilder:validation:Required
+	Secret *corev1.LocalObjectReference `json:"secret,omitempty"`
+}
+
 type KeySpec struct {
 	// The key name found in the resource
 	//
