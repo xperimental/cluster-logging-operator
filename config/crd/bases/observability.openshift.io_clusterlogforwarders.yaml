@@ -24,8 +24,7 @@ spec:
       openAPIV3Schema:
         description: "ClusterLogForwarder is an API to configure forwarding logs.
           \n You configure forwarding by specifying a list of `pipelines`, which forward
-          from a set of named inputs to a set of named outputs. \n ClusterLogForwarder
-          is the Schema for the clusterlogforwarders API"
+          from a set of named inputs to a set of named outputs."
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -239,7 +238,7 @@ spec:
                             missing or null, the default value used is [404, 409,
                             422, 429] (NotFound, Conflict, UnprocessableEntity, TooManyRequests)
                             If it is the empty list [], then no status codes are omitted.
-                            Otherwise this field should be a list of integer status
+                            Otherwise, this field should be a list of integer status
                             codes to omit.
                           items:
                             type: integer
@@ -572,10 +571,10 @@ spec:
                       nullable: true
                       properties:
                         sources:
-                          description: 'Sources defines the list of infrastructure
+                          description: "Sources defines the list of infrastructure
                             sources to collect. This field is optional and omission
                             results in the collection of all infrastructure sources.
-                            Valid sources are: node, container'
+                            \n Valid sources are: node, container"
                           items:
                             type: string
                           type: array
@@ -689,7 +688,7 @@ spec:
                   default openshift log store. You can define outputs to forward to
                   other stores or log processors, inside or outside the cluster."
                 items:
-                  description: Output defines a destination for log messages.
+                  description: OutputSpec defines a destination for log messages.
                   properties:
                     azureMonitor:
                       nullable: true
@@ -813,7 +812,7 @@ spec:
                             roleARN:
                               description: RoleArn specifies the `role_arn specifying
                                 a properly formatted role arn for STS enabled clusters
-                                Or for sts-enabled clusters `credentials` or `role_arn`
+                                or for sts-enabled clusters `credentials` or `role_arn`
                                 key specifying a properly formatted role arn
                               nullable: true
                               properties:
@@ -831,10 +830,10 @@ spec:
                           - namespaceUUID
                           type: string
                         groupPrefix:
-                          description: GroupPrefix Add this prefix to all group names.
-                            Useful to avoid group name clashes if an AWS account is
-                            used for multiple clusters and used verbatim (e.g. ""
-                            means no prefix) The default prefix is cluster-name/log-type
+                          description: "GroupPrefix Add this prefix to all group names.
+                            \n Useful to avoid group name clashes if an AWS account
+                            is used for multiple clusters and used verbatim (e.g.
+                            \"\" means no prefix). The default prefix is cluster-name/log-type"
                           type: string
                         region:
                           type: string
@@ -846,7 +845,7 @@ spec:
                               default: none
                               description: Compression causes data to be compressed
                                 before sending over the network. It is an error if
-                                the compression type is not supported by the  output.
+                                the compression type is not supported by the output.
                               enum:
                               - gzip
                               - none
@@ -1016,7 +1015,7 @@ spec:
                             credentials:
                               description: Credentials path to `google-application-credentials.json`.
                                 Assumed to be `google-application-credentials.json`
-                                if not defined
+                                if not defined.
                               nullable: true
                               properties:
                                 key:

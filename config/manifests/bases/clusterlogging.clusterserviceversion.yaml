@@ -104,8 +104,7 @@ spec:
       version: v1
     - description: "ClusterLogForwarder is an API to configure forwarding logs. \n
         You configure forwarding by specifying a list of `pipelines`, which forward
-        from a set of named inputs to a set of named outputs. \n ClusterLogForwarder
-        is the Schema for the clusterlogforwarders API"
+        from a set of named inputs to a set of named outputs."
       displayName: Cluster Log Forwarder
       kind: ClusterLogForwarder
       name: clusterlogforwarders.observability.openshift.io
