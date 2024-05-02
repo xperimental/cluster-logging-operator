@@ -91,7 +91,7 @@ type CollectorSpec struct {
 	Tolerations []corev1.Toleration `json:"tolerations,omitempty"`
 }
 
-// PipelinesSpec link a set of inputs to a set of outputs.
+// PipelineSpec link a set of inputs to a set of outputs.
 type PipelineSpec struct {
 	// Name is optional, but must be unique in the `pipelines` list if provided.
 	//
