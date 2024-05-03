@@ -2057,9 +2057,6 @@ spec:
                       items:
                         type: string
                       type: array
-                      x-kubernetes-list-map-keys:
-                      - name
-                      x-kubernetes-list-type: map
                     inputRefs:
                       description: "InputRefs lists the names (`input.name`) of inputs
                         to this pipeline. \n The following built-in input names are
@@ -2070,9 +2067,6 @@ spec:
                       items:
                         type: string
                       type: array
-                      x-kubernetes-list-map-keys:
-                      - name
-                      x-kubernetes-list-type: map
                     name:
                       description: Name is optional, but must be unique in the `pipelines`
                         list if provided.
@@ -2083,9 +2077,6 @@ spec:
                       items:
                         type: string
                       type: array
-                      x-kubernetes-list-map-keys:
-                      - name
-                      x-kubernetes-list-type: map
                   type: object
                 type: array
               serviceAccount:
