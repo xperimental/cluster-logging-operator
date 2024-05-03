@@ -211,7 +211,6 @@ type ReceiverSpec struct {
 	// +kubebuilder:default:=8443
 	// +kubebuilder:validation:Minimum:=1024
 	// +kubebuilder:validation:Maximum:=65535
-	// +optional
 	Port int32 `json:"port"`
 
 	// +optional

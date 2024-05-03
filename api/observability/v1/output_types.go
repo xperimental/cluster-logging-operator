@@ -187,7 +187,6 @@ type DeliverySpec struct {
 	//  - AtMostOnce: The forwarder makes no effort to recover logs lost during a crash. This mode may give
 	//    better throughput, but could result in more log loss.
 	//
-	// +optional
 	// +kubebuilder:validation:Enum:=AtLeastOnce;AtMostOnce
 	// +kubebuilder:default:=AtLeastOnce
 	Delivery string `json:"delivery,omitempty"`
@@ -297,7 +296,6 @@ type CloudwatchTuningSpec struct {
 	// Compression causes data to be compressed before sending over the network.
 	// It is an error if the compression type is not supported by the output.
 	//
-	// +optional
 	// +kubebuilder:validation:Enum:=gzip;none;snappy;zlib;zstd;lz4
 	// +kubebuilder:default:=none
 	Compression string `json:"compression,omitempty"`
@@ -385,7 +383,6 @@ type ElasticsearchTuningSpec struct {
 
 	// Compression causes data to be compressed before sending over the network.
 	//
-	// +optional
 	// +kubebuilder:validation:Enum:=none;gzip;zlib;zstd
 	// +kubebuilder:default:=none
 	Compression string `json:"compression,omitempty"`
@@ -407,7 +404,8 @@ type Elasticsearch struct {
 	// Must be one of: 6-8, where 8 is the default
 	//
 	// +kubebuilder:validation:Minimum:=6
-	// +optional
+	// +kubebuilder:validation:Maximum:=8
+	// +kubebuilder:default:=8
 	Version int `json:"version,omitempty"`
 }
 
@@ -441,7 +439,6 @@ type HttpTuningSpec struct {
 
 	// Compression causes data to be compressed before sending over the network.
 	//
-	// +optional
 	// +kubebuilder:validation:Enum:=none;gzip;snappy;zlib
 	// +kubebuilder:default:=none
 	Compression string `json:"compression,omitempty"`
@@ -486,7 +483,6 @@ type KafkaTuningSpec struct {
 
 	// Compression causes data to be compressed before sending over the network.
 	//
-	// +optional
 	// +kubebuilder:validation:Enum:=none;snappy;zstd;lz4
 	// +kubebuilder:default:=none
 	Compression string `json:"compression,omitempty"`
@@ -544,9 +540,8 @@ type LokiTuningSpec struct {
 
 	// Compression causes data to be compressed before sending over the network.
 	//
-	// +optional
 	// +kubebuilder:validation:Enum:=none;gzip;snappy
-	// +kubebuilder:default:=none
+	// +kubebuilder:default:=snappy
 	Compression string `json:"compression,omitempty"`
 }
 
