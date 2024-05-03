@@ -549,9 +549,27 @@ type LokiTuningSpec struct {
 	Compression string `json:"compression,omitempty"`
 }
 
+// LokiStackTarget contains information about how to reach the LokiStack used as an output.
+type LokiStackTarget struct {
+	// Namespace of the in-cluster LokiStack resource.
+	//
+	// +optional
+	Namespace string `json:"namespace,omitempty"`
+
+	// Name of the in-cluster LokiStack resource.
+	//
+	// +required
+	Name string `json:"name"`
+}
+
 // LokiStack provides optional extra properties for `type: lokistack`
 type LokiStack struct {
 	AuthorizationSpec `json:",inline"`
+
+	// Target points to the LokiStack resources that should be used as a target for the output.
+	//
+	// +required
+	Target LokiStackTarget `json:"target"`
 
 	// Tuning specs tuning for the output
 	//
