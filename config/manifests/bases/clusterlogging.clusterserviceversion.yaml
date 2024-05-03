@@ -143,14 +143,12 @@ spec:
         path: inputs[0].receiver.tls.certificate.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: inputs[0].receiver.tls.key.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: inputs[0].receiver.tls.keyPassphrase.key
         x-descriptors:
@@ -158,104 +156,87 @@ spec:
       - description: Outputs are named destinations for log messages.
         displayName: Forwarder Outputs
         path: outputs
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].azureMonitor.sharedKey.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].cloudwatch.accessKeyID.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].cloudwatch.accessKeySecret.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].cloudwatch.credentials.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].cloudwatch.roleARN.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].elasticsearch.password.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].elasticsearch.token.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].elasticsearch.username.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].googleCloudLogging.credentials.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].http.password.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].http.token.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].http.username.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].kafka.sasl.password.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].kafka.sasl.username.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].lokiStack.password.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].lokiStack.token.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].lokiStack.username.key
         x-descriptors:
@@ -266,8 +247,7 @@ spec:
         path: outputs[0].rateLimit.maxRecordsPerSecond
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:number
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].splunk.token.key
         x-descriptors:
@@ -284,14 +264,12 @@ spec:
         path: outputs[0].tls.certificate.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].tls.key.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Name of the key used to get the value in either the referenced
-          ConfigMap or Secret.
+      - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
         path: outputs[0].tls.keyPassphrase.key
         x-descriptors:

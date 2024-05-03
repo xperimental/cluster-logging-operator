@@ -550,6 +550,8 @@ spec:
                                     in a pipeline
                                   format: int64
                                   type: integer
+                              required:
+                              - maxRecordsPerSecond
                               type: object
                           type: object
                       type: object
@@ -655,6 +657,8 @@ spec:
                                       type: string
                                   type: object
                                   x-kubernetes-map-type: atomic
+                              required:
+                              - key
                               type: object
                             certificate:
                               description: Certificate points to the server certificate
@@ -689,6 +693,8 @@ spec:
                                       type: string
                                   type: object
                                   x-kubernetes-map-type: atomic
+                              required:
+                              - key
                               type: object
                             key:
                               description: Key points to the private key of the server
@@ -697,7 +703,7 @@ spec:
                               properties:
                                 key:
                                   description: Name of the key used to get the value
-                                    in either the referenced ConfigMap or Secret.
+                                    from the referenced Secret.
                                   type: string
                                 secret:
                                   description: Use Secret if the value should be sourced
@@ -711,6 +717,9 @@ spec:
                                       type: string
                                   type: object
                                   x-kubernetes-map-type: atomic
+                              required:
+                              - key
+                              - secret
                               type: object
                             keyPassphrase:
                               description: KeyPassphrase points to the passphrase
@@ -719,7 +728,7 @@ spec:
                               properties:
                                 key:
                                   description: Name of the key used to get the value
-                                    in either the referenced ConfigMap or Secret.
+                                    from the referenced Secret.
                                   type: string
                                 secret:
                                   description: Use Secret if the value should be sourced
@@ -733,6 +742,9 @@ spec:
                                       type: string
                                   type: object
                                   x-kubernetes-map-type: atomic
+                              required:
+                              - key
+                              - secret
                               type: object
                           type: object
                         type:
@@ -743,6 +755,7 @@ spec:
                           type: string
                       required:
                       - port
+                      - type
                       type: object
                     type:
                       description: Type of output sink.
@@ -788,8 +801,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -802,6 +815,9 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
+                          - secret
                           type: object
                         tuning:
                           description: Tuning specs tuning for the output
@@ -853,8 +869,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -867,6 +883,9 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
+                          - secret
                           type: object
                         accessKeySecret:
                           description: AccessKeySecret points to the AWS access key
@@ -874,8 +893,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -888,6 +907,9 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
+                          - secret
                           type: object
                         credentials:
                           description: Credentials points to the secret containing
@@ -896,8 +918,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -910,6 +932,9 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
+                          - secret
                           type: object
                         groupBy:
                           description: GroupBy defines the strategy for grouping logstreams
@@ -933,8 +958,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -947,6 +972,9 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
+                          - secret
                           type: object
                         tuning:
                           description: Tuning specs tuning for the output
@@ -999,6 +1027,9 @@ spec:
                               format: int64
                               type: integer
                           type: object
+                      required:
+                      - groupBy
+                      - region
                       type: object
                     elasticsearch:
                       nullable: true
@@ -1013,8 +1044,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -1027,6 +1058,9 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
+                          - secret
                           type: object
                         token:
                           description: Token specifies a bearer token to be used for
@@ -1034,8 +1068,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -1114,8 +1148,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -1128,6 +1162,9 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
+                          - secret
                           type: object
                         version:
                           default: 8
@@ -1151,8 +1188,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -1165,6 +1202,9 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
+                          - secret
                           type: object
                         folderId:
                           type: string
@@ -1206,8 +1246,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -1220,6 +1260,9 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
+                          - secret
                           type: object
                         timeout:
                           description: Timeout specifies the Http request timeout
@@ -1231,8 +1274,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -1324,8 +1367,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -1338,7 +1381,12 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
+                          - secret
                           type: object
+                      required:
+                      - url
                       type: object
                     kafka:
                       description: 'Kafka provides optional extra properties for `type:
@@ -1369,7 +1417,7 @@ spec:
                               properties:
                                 key:
                                   description: Name of the key used to get the value
-                                    in either the referenced ConfigMap or Secret.
+                                    from the referenced Secret.
                                   type: string
                                 secret:
                                   description: Use Secret if the value should be sourced
@@ -1383,6 +1431,9 @@ spec:
                                       type: string
                                   type: object
                                   x-kubernetes-map-type: atomic
+                              required:
+                              - key
+                              - secret
                               type: object
                             username:
                               description: Username points to the secret to be used
@@ -1390,7 +1441,7 @@ spec:
                               properties:
                                 key:
                                   description: Name of the key used to get the value
-                                    in either the referenced ConfigMap or Secret.
+                                    from the referenced Secret.
                                   type: string
                                 secret:
                                   description: Use Secret if the value should be sourced
@@ -1404,6 +1455,9 @@ spec:
                                       type: string
                                   type: object
                                   x-kubernetes-map-type: atomic
+                              required:
+                              - key
+                              - secret
                               type: object
                           type: object
                         topic:
@@ -1461,6 +1515,8 @@ spec:
                             See the `secret` field for more details."
                           pattern: ^$|[a-zA-z]+:\/\/.*
                           type: string
+                      required:
+                      - url
                       type: object
                     lokiStack:
                       description: 'LokiStack provides optional extra properties for
@@ -1492,8 +1548,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -1506,6 +1562,9 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
+                          - secret
                           type: object
                         token:
                           description: Token specifies a bearer token to be used for
@@ -1513,8 +1572,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -1591,8 +1650,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -1605,6 +1664,9 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
+                          - secret
                           type: object
                       type: object
                     name:
@@ -1625,6 +1687,8 @@ spec:
                             log records allowed per input/output in a pipeline
                           format: int64
                           type: integer
+                      required:
+                      - maxRecordsPerSecond
                       type: object
                     splunk:
                       description: 'Splunk Deliver log data to Splunk’s HTTP Event
@@ -1642,8 +1706,8 @@ spec:
                             HEC token used for authenticating requests.
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -1656,6 +1720,9 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
+                          - secret
                           type: object
                         tuning:
                           description: Tuning specs tuning for the output
@@ -1708,6 +1775,8 @@ spec:
                             See the `secret` field for more details."
                           pattern: ^$|[a-zA-z]+:\/\/.*
                           type: string
+                      required:
+                      - url
                       type: object
                     syslog:
                       description: Syslog provides optional extra properties for output
@@ -1774,6 +1843,8 @@ spec:
                             See the `secret` field for more details."
                           pattern: ^$|[a-zA-z]+:\/\/.*
                           type: string
+                      required:
+                      - url
                       type: object
                     tls:
                       description: TLS contains settings for controlling options on
@@ -1811,6 +1882,8 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
                           type: object
                         certificate:
                           description: Certificate points to the client certificate
@@ -1843,6 +1916,8 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
                           type: object
                         insecureSkipVerify:
                           description: "If InsecureSkipVerify is true, then the TLS
@@ -1855,8 +1930,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -1869,6 +1944,9 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
+                          - secret
                           type: object
                         keyPassphrase:
                           description: KeyPassphrase points to the passphrase used
@@ -1876,8 +1954,8 @@ spec:
                           nullable: true
                           properties:
                             key:
-                              description: Name of the key used to get the value in
-                                either the referenced ConfigMap or Secret.
+                              description: Name of the key used to get the value from
+                                the referenced Secret.
                               type: string
                             secret:
                               description: Use Secret if the value should be sourced
@@ -1890,6 +1968,9 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                          required:
+                          - key
+                          - secret
                           type: object
                         securityProfile:
                           description: TLSSecurityProfile is the security profile
@@ -2041,6 +2122,7 @@ spec:
                       - syslog
                       type: string
                   required:
+                  - name
                   - type
                   type: object
                 type: array
@@ -2078,6 +2160,10 @@ spec:
                       items:
                         type: string
                       type: array
+                  required:
+                  - inputRefs
+                  - name
+                  - outputRefs
                   type: object
                 type: array
               serviceAccount:
@@ -2090,6 +2176,9 @@ spec:
                     type: string
                 type: object
                 x-kubernetes-map-type: atomic
+            required:
+            - pipelines
+            - serviceAccount
             type: object
           status:
             description: ClusterLogForwarderStatus defines the observed state of ClusterLogForwarder
