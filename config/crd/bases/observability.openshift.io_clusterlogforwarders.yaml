@@ -1018,6 +1018,18 @@ spec:
                                   type: string
                               type: object
                               x-kubernetes-map-type: atomic
+                            serviceAccount:
+                              description: ServiceAccount contains the name of the
+                                Kubernetes ServiceAccount that should be used for
+                                getting an authorization token.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
                           type: object
                         tuning:
                           description: Tuning specs tuning for the output
@@ -1194,6 +1206,18 @@ spec:
                             secret:
                               description: Use Secret if the value should be sourced
                                 from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                            serviceAccount:
+                              description: ServiceAccount contains the name of the
+                                Kubernetes ServiceAccount that should be used for
+                                getting an authorization token.
                               properties:
                                 name:
                                   description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
@@ -1411,7 +1435,7 @@ spec:
                       type: object
                     lokiStack:
                       description: 'LokiStack provides optional extra properties for
-                        `type: loki`'
+                        `type: lokistack`'
                       nullable: true
                       properties:
                         labelKeys:
@@ -1466,6 +1490,18 @@ spec:
                             secret:
                               description: Use Secret if the value should be sourced
                                 from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                            serviceAccount:
+                              description: ServiceAccount contains the name of the
+                                Kubernetes ServiceAccount that should be used for
+                                getting an authorization token.
                               properties:
                                 name:
                                   description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
@@ -2028,8 +2064,8 @@ spec:
                   type: object
                 type: array
               serviceAccount:
-                description: ServiceAccount is the spec of the serviceaccount associated
-                  with the clusterlogforwarder
+                description: ServiceAccount points to the ServiceAccount resource
+                  used for the collector pods.
                 properties:
                   name:
                     description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
