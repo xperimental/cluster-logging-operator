@@ -296,4 +296,10 @@ type InputTLSSpec struct {
 	// +optional
 	// +nullable
 	Key *SecretKey `json:"key,omitempty"`
+
+	// KeyPassphrase points to the passphrase used to unlock the private key.
+	//
+	// +optional
+	// +nullable
+	KeyPassphrase *SecretKey `json:"keyPassphrase,omitempty"`
 }
