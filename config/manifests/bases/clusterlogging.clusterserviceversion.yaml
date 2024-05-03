@@ -158,87 +158,87 @@ spec:
         path: outputs
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].azureMonitor.sharedKey.key
+        path: outputs[0].azureMonitor.authentication.sharedKey.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].cloudwatch.accessKeyID.key
+        path: outputs[0].cloudwatch.authentication.accessKeyID.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].cloudwatch.accessKeySecret.key
+        path: outputs[0].cloudwatch.authentication.accessKeySecret.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].cloudwatch.credentials.key
+        path: outputs[0].cloudwatch.authentication.credentials.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].cloudwatch.roleARN.key
+        path: outputs[0].cloudwatch.authentication.roleARN.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].elasticsearch.password.key
+        path: outputs[0].elasticsearch.authentication.password.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].elasticsearch.token.key
+        path: outputs[0].elasticsearch.authentication.token.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].elasticsearch.username.key
+        path: outputs[0].elasticsearch.authentication.username.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].googleCloudLogging.credentials.key
+        path: outputs[0].googleCloudLogging.authentication.credentials.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].http.password.key
+        path: outputs[0].http.authentication.password.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].http.token.key
+        path: outputs[0].http.authentication.token.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].http.username.key
+        path: outputs[0].http.authentication.username.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].kafka.sasl.password.key
+        path: outputs[0].kafka.authentication.sasl.password.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].kafka.sasl.username.key
+        path: outputs[0].kafka.authentication.sasl.username.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].lokiStack.password.key
+        path: outputs[0].lokiStack.authentication.password.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].lokiStack.token.key
+        path: outputs[0].lokiStack.authentication.token.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].lokiStack.username.key
+        path: outputs[0].lokiStack.authentication.username.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: MaxRecordsPerSecond is the maximum number of log records allowed
@@ -249,7 +249,7 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:number
       - description: Name of the key used to get the value from the referenced Secret.
         displayName: Key Name
-        path: outputs[0].splunk.token.key
+        path: outputs[0].splunk.authentication.token.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value in either the referenced
