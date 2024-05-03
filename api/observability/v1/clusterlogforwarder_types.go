@@ -178,7 +178,7 @@ type BearerToken struct {
 	Secret *corev1.LocalObjectReference `json:"secret,omitempty"`
 
 	// ServiceAccount contains the name of the Kubernetes ServiceAccount that should be used for getting
-	// an authorization token.
+	// a token for authenticating requests.
 	//
 	// +optional
 	ServiceAccount *corev1.LocalObjectReference `json:"serviceAccount,omitempty"`

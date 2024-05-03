@@ -236,9 +236,9 @@ type OutputTypeSpec struct {
 	AzureMonitor *AzureMonitor `json:"azureMonitor,omitempty"`
 }
 
-// AuthorizationSpec provides options for setting common authorization credentials.
+// HTTPAuthentication provides options for setting common authentication credentials.
 // This is mostly used with outputs using HTTP or a derivative as transport.
-type AuthorizationSpec struct {
+type HTTPAuthentication struct {
 	// Token specifies a bearer token to be used for authenticating requests.
 	//
 	// +optional
@@ -258,12 +258,20 @@ type AuthorizationSpec struct {
 	Password *SecretKey `json:"password,omitempty"`
 }
 
-type AzureMonitor struct {
+// AzureMonitorAuthentication contains configuration for authenticating requests to a AzureMonitor output.
+type AzureMonitorAuthentication struct {
 	// SharedKey points to the secret containing the shared key used for authenticating requests.
 	//
 	// +optional
 	// +nullable
 	SharedKey *SecretKey `json:"sharedKey,omitempty"`
+}
+
+type AzureMonitor struct {
+	// Authentication sets credentials for authenticating the requests.
+	//
+	// +optional
+	Authentication *AzureMonitorAuthentication `json:"authentication,omitempty"`
 
 	// CustomerId che unique identifier for the Log Analytics workspace.
 	// https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-collector-api?tabs=powershell#request-uri-parameters
@@ -304,8 +312,8 @@ type CloudwatchTuningSpec struct {
 	Compression string `json:"compression,omitempty"`
 }
 
-// Cloudwatch provides configuration for the output type `cloudwatch`
-type Cloudwatch struct {
+// CloudwatchAuthentication contains configuration for authenticating requests to a Cloudwatch output.
+type CloudwatchAuthentication struct {
 	// AccessKeyID points to the AWS access key id to be used for authentication.
 	//
 	// +optional
@@ -331,6 +339,14 @@ type Cloudwatch struct {
 	// +optional
 	// +nullable
 	RoleARN *SecretKey `json:"roleARN,omitempty"`
+}
+
+// Cloudwatch provides configuration for the output type `cloudwatch`
+type Cloudwatch struct {
+	// Authentication sets credentials for authenticating the requests.
+	//
+	// +optional
+	Authentication *CloudwatchAuthentication `json:"authentication,omitempty"`
 
 	// Tuning specs tuning for the output
 	//
@@ -393,9 +409,12 @@ type ElasticsearchTuningSpec struct {
 }
 
 type Elasticsearch struct {
-	AuthorizationSpec `json:",inline"`
-
 	URLSpec `json:",inline"`
+
+	// Authentication sets credentials for authenticating the requests.
+	//
+	// +optional
+	Authentication *HTTPAuthentication `json:"authentication,omitempty"`
 
 	// Tuning specs tuning for the output
 	//
@@ -415,14 +434,21 @@ type Elasticsearch struct {
 	Version int `json:"version,omitempty"`
 }
 
+// GoogleCloudLoggingAuthentication contains configuration for authenticating requests to a GoogleCloudLogging output.
+type GoogleCloudLoggingAuthentication struct {
+	// Credentials points to the secret containing the `google-application-credentials.json`.
+	//
+	// +required
+	Credentials *SecretKey `json:"credentials"`
+}
+
 // GoogleCloudLogging provides configuration for sending logs to Google Cloud Logging.
 // Exactly one of billingAccountID, organizationID, folderID, or projectID must be set.
 type GoogleCloudLogging struct {
-	// Credentials points to the secret containing the `google-application-credentials.json`.
+	// Authentication sets credentials for authenticating the requests.
 	//
 	// +optional
-	// +nullable
-	Credentials *SecretKey `json:"credentials,omitempty"`
+	Authentication *GoogleCloudLoggingAuthentication `json:"authentication,omitempty"`
 
 	// +optional
 	BillingAccountID string `json:"billingAccountId,omitempty"`
@@ -452,15 +478,18 @@ type HttpTuningSpec struct {
 
 // HTTP provided configuration for sending json encoded logs to a generic HTTP endpoint.
 type HTTP struct {
-	AuthorizationSpec `json:",inline"`
+	URLSpec `json:",inline"`
+
+	// Authentication sets credentials for authenticating the requests.
+	//
+	// +optional
+	Authentication *HTTPAuthentication `json:"authentication,omitempty"`
 
 	// Tuning specs tuning for the output
 	//
 	// +optional
 	// +nullable
 	Tuning *HttpTuningSpec `json:"tuning,omitempty"`
-
-	URLSpec `json:",inline"`
 
 	// Headers specify optional headers to be sent with the request
 	//
@@ -494,7 +523,15 @@ type KafkaTuningSpec struct {
 	Compression string `json:"compression,omitempty"`
 }
 
-type SASLAuthorization struct {
+// KafkaAuthentication contains configuration for authenticating requests to a Kafka output.
+type KafkaAuthentication struct {
+	// SASL contains options configuring SASL authentication.
+	//
+	// +optional
+	SASL *SASLAuthentication `json:"sasl,omitempty"`
+}
+
+type SASLAuthentication struct {
 	// Username points to the secret to be used as SASL username.
 	//
 	// +optional
@@ -513,18 +550,18 @@ type SASLAuthorization struct {
 
 // Kafka provides optional extra properties for `type: kafka`
 type Kafka struct {
-	// SASL contains options configuring SASL authentication.
+	URLSpec `json:",inline"`
+
+	// Authentication sets credentials for authenticating the requests.
 	//
 	// +optional
-	SASL *SASLAuthorization `json:"sasl,omitempty"`
+	Authentication *KafkaAuthentication `json:"authentication,omitempty"`
 
 	// Tuning specs tuning for the output
 	//
 	// +optional
 	// +nullable
 	Tuning *KafkaTuningSpec `json:"tuning,omitempty"`
-
-	URLSpec `json:",inline"`
 
 	// Topic specifies the target topic to send logs to.
 	//
@@ -566,7 +603,10 @@ type LokiStackTarget struct {
 
 // LokiStack provides optional extra properties for `type: lokistack`
 type LokiStack struct {
-	AuthorizationSpec `json:",inline"`
+	// Authentication sets credentials for authenticating the requests.
+	//
+	// +optional
+	Authentication *HTTPAuthentication `json:"authentication,omitempty"`
 
 	// Target points to the LokiStack resources that should be used as a target for the output.
 	//
@@ -599,13 +639,21 @@ type SplunkTuningSpec struct {
 	BaseOutputTuningSpec `json:",inline"`
 }
 
-// Splunk Deliver log data to Splunk’s HTTP Event Collector
-// Provides optional extra properties for `type: splunk_hec` ('splunk_hec_logs' after Vector 0.23
-type Splunk struct {
+// SplunkAuthentication contains configuration for authenticating requests to a Splunk output.
+type SplunkAuthentication struct {
 	// Token points to the secret containing the Splunk HEC token used for authenticating requests.
 	//
 	// +optional
 	Token *SecretKey `json:"token,omitempty"`
+}
+
+// Splunk Deliver log data to Splunk’s HTTP Event Collector
+// Provides optional extra properties for `type: splunk_hec` ('splunk_hec_logs' after Vector 0.23
+type Splunk struct {
+	// Authentication sets credentials for authenticating the requests.
+	//
+	// +optional
+	Authentication *SplunkAuthentication `json:"authentication,omitempty"`
 
 	// Tuning specs tuning for the output
 	//
