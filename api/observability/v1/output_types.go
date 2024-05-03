@@ -241,7 +241,7 @@ type AuthorizationSpec struct {
 	//
 	// +optional
 	// +nullable
-	Token *SecretKey `json:"token,omitempty"`
+	Token *BearerToken `json:"token,omitempty"`
 
 	// Username to use for authenticating requests.
 	//
@@ -550,7 +550,7 @@ type LokiTuningSpec struct {
 	Compression string `json:"compression,omitempty"`
 }
 
-// LokiStack provides optional extra properties for `type: loki`
+// LokiStack provides optional extra properties for `type: lokistack`
 type LokiStack struct {
 	AuthorizationSpec `json:",inline"`
 

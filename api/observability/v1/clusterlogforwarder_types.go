@@ -64,10 +64,10 @@ type ClusterLogForwarderSpec struct {
 	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Forwarder Pipelines"
 	Pipelines []PipelineSpec `json:"pipelines,omitempty"`
 
-	// ServiceAccount is the spec of the serviceaccount associated with the clusterlogforwarder
+	// ServiceAccount points to the ServiceAccount resource used for the collector pods.
 	//
 	// +required
-	ServiceAccountName corev1.LocalObjectReference `json:"serviceAccount,omitempty"`
+	ServiceAccount corev1.LocalObjectReference `json:"serviceAccount,omitempty"`
 }
 
 // CollectorSpec is spec to define scheduling and resources for a collector
@@ -186,6 +186,16 @@ type SecretKey struct {
 	// +required
 	// +kubebuilder:validation:Required
 	Secret *corev1.LocalObjectReference `json:"secret,omitempty"`
+}
+
+// BearerToken allows configuring the source of a bearer token used for authentication.
+// The token can either be read from a secret or from a Kubernetes ServiceAccount.
+type BearerToken struct {
+	SecretKey `json:",inline"`
+
+	// ServiceAccount contains the name of the Kubernetes ServiceAccount that should be used for getting
+	// an authorization token.
+	ServiceAccount corev1.LocalObjectReference `json:"serviceAccount,omitempty"`
 }
 
 // ClusterLogForwarderStatus defines the observed state of ClusterLogForwarder
