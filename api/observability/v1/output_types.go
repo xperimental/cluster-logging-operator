@@ -20,9 +20,6 @@ import (
 	"time"
 )
 
-// NOTE: The Enum validation on OutputSpec.Type must be updated if the list of
-// known types changes.
-
 // OutputType is used to define the type of output to be created.
 //
 // +kubebuilder:validation:Enum:=azureMonitor;cloudwatch;elasticsearch;http;kafka;lokiStack;googleCloudLogging;splunk;syslog
