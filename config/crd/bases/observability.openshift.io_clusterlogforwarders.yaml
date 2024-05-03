@@ -2014,6 +2014,8 @@ spec:
                       - splunk
                       - syslog
                       type: string
+                  required:
+                  - type
                   type: object
                 type: array
               pipelines:
