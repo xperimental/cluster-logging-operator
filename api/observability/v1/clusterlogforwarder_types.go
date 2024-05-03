@@ -104,24 +104,19 @@ type PipelineSpec struct {
 	// `audit` selects node logs related to security audits.
 	//
 	// +required
-	// +listType:=map
-	// +listMapKey:=name
 	InputRefs []string `json:"inputRefs,omitempty"`
 
 	// OutputRefs lists the names (`output.name`) of outputs from this pipeline.
 	//
 	// +required
-	// +listType:=map
-	// +listMapKey:=name
 	OutputRefs []string `json:"outputRefs,omitempty"`
 
 	// Filters lists the names of filters to be applied to records going through this pipeline.
 	//
 	// Each filter is applied in order.
 	// If a filter drops a records, subsequent filters are not applied.
+	//
 	// +optional
-	// +listType:=map
-	// +listMapKey:=name
 	FilterRefs []string `json:"filterRefs,omitempty"`
 }
 
