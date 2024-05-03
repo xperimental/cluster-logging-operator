@@ -181,7 +181,7 @@ type BearerToken struct {
 	// an authorization token.
 	//
 	// +optional
-	ServiceAccount corev1.LocalObjectReference `json:"serviceAccount,omitempty"`
+	ServiceAccount *corev1.LocalObjectReference `json:"serviceAccount,omitempty"`
 }
 
 // ClusterLogForwarderStatus defines the observed state of ClusterLogForwarder
