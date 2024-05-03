@@ -15,10 +15,6 @@ limitations under the License.
 package v1
 
 import (
-	"fmt"
-
-	"github.com/openshift/cluster-logging-operator/internal/status"
-
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -195,72 +191,27 @@ type ClusterLogForwarderStatus struct {
 	// Conditions of the log forwarder.
 	//
 	// +operator-sdk:csv:customresourcedefinitions:type=status,displayName="Forwarder Conditions",xDescriptors={"urn:alm:descriptor:io.kubernetes.conditions"}
-	Conditions status.Conditions `json:"conditions,omitempty"`
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
 
 	// Inputs maps input name to condition of the input.
 	//
 	// +operator-sdk:csv:customresourcedefinitions:type=status,displayName="Input Conditions",xDescriptors={"urn:alm:descriptor:io.kubernetes.conditions"}
-	Inputs NamedConditions `json:"inputs,omitempty"`
+	Inputs ConditionMap `json:"inputs,omitempty"`
 
 	// Outputs maps output name to condition of the output.
 	//
 	// +operator-sdk:csv:customresourcedefinitions:type=status,displayName="Output Conditions",xDescriptors={"urn:alm:descriptor:io.kubernetes.conditions"}
-	Outputs NamedConditions `json:"outputs,omitempty"`
+	Outputs ConditionMap `json:"outputs,omitempty"`
 
 	// Filters maps filter name to condition of the filter.
 	//
 	// +operator-sdk:csv:customresourcedefinitions:type=status,displayName="Filter Conditions",xDescriptors={"urn:alm:descriptor:io.kubernetes.conditions"}
-	Filters NamedConditions `json:"filters,omitempty"`
+	Filters ConditionMap `json:"filters,omitempty"`
 
 	// Pipelines maps pipeline name to condition of the pipeline.
 	//
 	// +operator-sdk:csv:customresourcedefinitions:type=status,displayName="Pipeline Conditions",xDescriptors={"urn:alm:descriptor:io.kubernetes.conditions"}
-	Pipelines NamedConditions `json:"pipelines,omitempty"`
-}
-
-// Synchronize synchronizes the current Status with a new Status.
-// This is not the same as simply replacing the Status: Conditions contain the LastTransitionTime
-// field which is left unmodified by Synchronize for noops. Whereas all updates and additions shall use the current
-// (= now) timestamp.
-// In short, ignore any timestamp in newStatus, and for noops use the timestamp from old status or use time.Now() for
-// updates and additions.
-func (status *ClusterLogForwarderStatus) Synchronize(newStatus *ClusterLogForwarderStatus) error {
-	if status == nil {
-		return fmt.Errorf("cannot operate on a nil pointer in *ClusterLogForwarderStatus.Synchronize()")
-	}
-
-	// Synchronize status.Conditions.
-	synchronizeConditions(&status.Conditions, &newStatus.Conditions)
-
-	// Initialize the named status fields if they are nil.
-	if status.Filters == nil {
-		status.Filters = NamedConditions{}
-	}
-	if status.Inputs == nil {
-		status.Inputs = NamedConditions{}
-	}
-	if status.Outputs == nil {
-		status.Outputs = NamedConditions{}
-	}
-	if status.Pipelines == nil {
-		status.Pipelines = NamedConditions{}
-	}
-
-	// Synchronize the named status fields.
-	if err := status.Filters.Synchronize(newStatus.Filters); err != nil {
-		return err
-	}
-	if err := status.Inputs.Synchronize(newStatus.Inputs); err != nil {
-		return err
-	}
-	if err := status.Outputs.Synchronize(newStatus.Outputs); err != nil {
-		return err
-	}
-	if err := status.Pipelines.Synchronize(newStatus.Pipelines); err != nil {
-		return err
-	}
-
-	return nil
+	Pipelines ConditionMap `json:"pipelines,omitempty"`
 }
 
 // ClusterLogForwarder is an API to configure forwarding logs.
