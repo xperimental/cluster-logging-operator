@@ -237,7 +237,7 @@ type ReceiverSpec struct {
 	// Type of Receiver plugin.
 	//
 	// +required
-	Type ReceiverType `json:"type,omitempty"`
+	Type ReceiverType `json:"type"`
 
 	// TLS contains settings for controlling options of TLS connections.
 	//

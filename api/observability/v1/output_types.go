@@ -57,9 +57,9 @@ var (
 type OutputSpec struct {
 	// Name used to refer to the output from a `pipeline`.
 	//
-	// +kubebuilder:validation:minLength:=1
 	// +required
-	Name string `json:"name,omitempty"`
+	// +kubebuilder:validation:minLength:=1
+	Name string `json:"name"`
 
 	// Type of output sink.
 	//
@@ -144,9 +144,9 @@ type URLSpec struct {
 	// Any additional authentication material is in the `secret`.
 	// See the `secret` field for more details.
 	//
-	// +kubebuilder:validation:Pattern:=`^$|[a-zA-z]+:\/\/.*`
 	// +required
-	URL string `json:"url,omitempty"`
+	// +kubebuilder:validation:Pattern:=`^$|[a-zA-z]+:\/\/.*`
+	URL string `json:"url"`
 }
 
 // BaseOutputTuningSpec tuning parameters for an output
@@ -339,12 +339,12 @@ type Cloudwatch struct {
 	Tuning *CloudwatchTuningSpec `json:"tuning,omitempty"`
 
 	// +required
-	Region string `json:"region,omitempty"`
+	Region string `json:"region"`
 
 	// GroupBy defines the strategy for grouping logstreams
 	//
 	// +required
-	GroupBy LogGroupByType `json:"groupBy,omitempty"`
+	GroupBy LogGroupByType `json:"groupBy"`
 
 	// GroupPrefix Add this prefix to all group names.
 	//

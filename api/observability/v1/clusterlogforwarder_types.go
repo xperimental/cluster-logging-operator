@@ -54,12 +54,12 @@ type ClusterLogForwarderSpec struct {
 	//
 	// +required
 	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Forwarder Pipelines"
-	Pipelines []PipelineSpec `json:"pipelines,omitempty"`
+	Pipelines []PipelineSpec `json:"pipelines"`
 
 	// ServiceAccount points to the ServiceAccount resource used for the collector pods.
 	//
 	// +required
-	ServiceAccount corev1.LocalObjectReference `json:"serviceAccount,omitempty"`
+	ServiceAccount corev1.LocalObjectReference `json:"serviceAccount"`
 }
 
 // CollectorSpec is spec to define scheduling and resources for a collector
@@ -91,7 +91,7 @@ type PipelineSpec struct {
 	//
 	// +required
 	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Name",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
 
 	// InputRefs lists the names (`input.name`) of inputs to this pipeline.
 	//
@@ -104,12 +104,12 @@ type PipelineSpec struct {
 	// `audit` selects node logs related to security audits.
 	//
 	// +required
-	InputRefs []string `json:"inputRefs,omitempty"`
+	InputRefs []string `json:"inputRefs"`
 
 	// OutputRefs lists the names (`output.name`) of outputs from this pipeline.
 	//
 	// +required
-	OutputRefs []string `json:"outputRefs,omitempty"`
+	OutputRefs []string `json:"outputRefs"`
 
 	// Filters lists the names of filters to be applied to records going through this pipeline.
 	//
@@ -126,15 +126,7 @@ type LimitSpec struct {
 	//
 	// +required
 	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Max Records Per Second",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:number"}
-	MaxRecordsPerSecond int64 `json:"maxRecordsPerSecond,omitempty"`
-}
-
-// ResourceTypeSpec is the spec for defining a key/value resource type
-type ResourceTypeSpec struct {
-	// The secret containing configuration or TLS information
-	//
-	// +required
-	Secret *corev1.LocalObjectReference `json:"secret,omitempty"`
+	MaxRecordsPerSecond int64 `json:"maxRecordsPerSecond"`
 }
 
 // ConfigMapOrSecretKey encodes a reference to a single field in either a ConfigMap or Secret in the same namespace.
@@ -145,7 +137,7 @@ type ConfigMapOrSecretKey struct {
 	// +kubebuilder:validation:minLength:=1
 	// +kubebuilder:validation:Required
 	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Key Name",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}
-	Key string `json:"key,omitempty"`
+	Key string `json:"key"`
 
 	// Use ConfigMap if the value should be sourced from a ConfigMap in the same namespace.
 	ConfigMap *corev1.LocalObjectReference `json:"configMap,omitempty"`
@@ -156,28 +148,39 @@ type ConfigMapOrSecretKey struct {
 
 // SecretKey encodes a reference to a single key in a Secret in the same namespace.
 type SecretKey struct {
-	// Name of the key used to get the value in either the referenced ConfigMap or Secret.
+	// Name of the key used to get the value from the referenced Secret.
 	//
 	// +required
 	// +kubebuilder:validation:minLength:=1
 	// +kubebuilder:validation:Required
 	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Key Name",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}
-	Key string `json:"key,omitempty"`
+	Key string `json:"key"`
 
 	// Use Secret if the value should be sourced from a Secret in the same namespace.
 	//
 	// +required
 	// +kubebuilder:validation:Required
-	Secret *corev1.LocalObjectReference `json:"secret,omitempty"`
+	Secret *corev1.LocalObjectReference `json:"secret"`
 }
 
 // BearerToken allows configuring the source of a bearer token used for authentication.
 // The token can either be read from a secret or from a Kubernetes ServiceAccount.
 type BearerToken struct {
-	SecretKey `json:",inline"`
+	// Name of the key used to get the value from the referenced Secret.
+	//
+	// +optional
+	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Key Name",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}
+	Key string `json:"key,omitempty"`
+
+	// Use Secret if the value should be sourced from a Secret in the same namespace.
+	//
+	// +optional
+	Secret *corev1.LocalObjectReference `json:"secret,omitempty"`
 
 	// ServiceAccount contains the name of the Kubernetes ServiceAccount that should be used for getting
 	// an authorization token.
+	//
+	// +optional
 	ServiceAccount corev1.LocalObjectReference `json:"serviceAccount,omitempty"`
 }
 
