@@ -155,84 +155,106 @@ spec:
           inside or outside the cluster."
         displayName: Forwarder Outputs
         path: outputs
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].azureMonitor.authorization.sharedKey.key
+        path: outputs[0].azureMonitor.sharedKey.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].cloudwatch.authorization.awsAccessKeyID.key
+        path: outputs[0].cloudwatch.accessKeyID.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].cloudwatch.authorization.awsSecretAccessKey.key
+        path: outputs[0].cloudwatch.accessKeySecret.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].cloudwatch.authorization.credentials.key
+        path: outputs[0].cloudwatch.credentials.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].cloudwatch.authorization.roleARN.key
+        path: outputs[0].cloudwatch.roleARN.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].elasticsearch.authorization.password.key
+        path: outputs[0].elasticsearch.password.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].elasticsearch.authorization.token.key
+        path: outputs[0].elasticsearch.token.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].elasticsearch.authorization.username.key
+        path: outputs[0].elasticsearch.username.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].googleCloudLogging.authorization.credentials.key
+        path: outputs[0].googleCloudLogging.credentials.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].http.authorization.password.key
+        path: outputs[0].http.password.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].http.authorization.token.key
+        path: outputs[0].http.token.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].http.authorization.username.key
+        path: outputs[0].http.username.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].kafka.authorization.saslMechanisms.key
+        path: outputs[0].kafka.sasl.password.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].kafka.authorization.saslPassword.key
+        path: outputs[0].kafka.sasl.username.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].kafka.authorization.saslUsername.key
+        path: outputs[0].lokiStack.password.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].lokiStack.authorization.token.key
+        path: outputs[0].lokiStack.token.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
+        displayName: Key Name
+        path: outputs[0].lokiStack.username.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: MaxRecordsPerSecond is the maximum number of log records allowed
@@ -241,9 +263,10 @@ spec:
         path: outputs[0].rateLimit.maxRecordsPerSecond
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:number
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].splunk.authorization.token.key
+        path: outputs[0].splunk.token.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Name of the key used to get the value in either the referenced
@@ -267,7 +290,7 @@ spec:
       - description: Name of the key used to get the value in either the referenced
           ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].tls.passphrase.key
+        path: outputs[0].tls.keyPassphrase.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Pipelines forward the messages selected by a set of inputs to

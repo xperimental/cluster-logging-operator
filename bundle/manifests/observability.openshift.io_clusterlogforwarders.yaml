@@ -732,24 +732,6 @@ spec:
                     azureMonitor:
                       nullable: true
                       properties:
-                        authorization:
-                          description: Authorization specs authorization for communicating
-                            with the receiver
-                          properties:
-                            name:
-                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                TODO: Add other useful fields. apiVersion, kind, uid?'
-                              type: string
-                            sharedKey:
-                              description: SharedKey is the `shared_key`
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
-                          type: object
-                          x-kubernetes-map-type: atomic
                         azureResourceId:
                           description: AzureResourceId the Resource ID of the Azure
                             resource the data should be associated with. https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-collector-api?tabs=powershell#request-headers
@@ -767,6 +749,27 @@ spec:
                             being submitted. Can only contain letters, numbers, and
                             underscores (_), and may not exceed 100 characters. https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-collector-api?tabs=powershell#request-headers
                           type: string
+                        sharedKey:
+                          description: SharedKey points to the secret containing the
+                            shared key used for authenticating requests.
+                          nullable: true
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
                         tuning:
                           description: Tuning specs tuning for the output
                           nullable: true
@@ -812,55 +815,70 @@ spec:
                         type `cloudwatch`
                       nullable: true
                       properties:
-                        authorization:
-                          description: Authorization specs authorization for communicating
-                            with the receiver
+                        accessKeyID:
+                          description: AccessKeyID points to the AWS access key id
+                            to be used for authentication.
+                          nullable: true
                           properties:
-                            awsAccessKeyID:
-                              description: AWSAccessKeyID. Assumed to be `aws_secret_access_key`
-                                if not defined
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
-                            awsSecretAccessKey:
-                              description: AWSSecretAccessKey. Assumed to be `aws_access_key_id`
-                                if not defined
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
-                            credentials:
-                              description: Credentials specifies the `credentials`  for
-                                STS enabled clusters.  Assumed to be 'credentials'
-                                if not defined
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
-                            name:
-                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                TODO: Add other useful fields. apiVersion, kind, uid?'
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
                               type: string
-                            roleARN:
-                              description: RoleArn specifies the `role_arn specifying
-                                a properly formatted role arn for STS enabled clusters
-                                or for sts-enabled clusters `credentials` or `role_arn`
-                                key specifying a properly formatted role arn
-                              nullable: true
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
                               properties:
-                                key:
-                                  description: The key name found in the resource
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
                                   type: string
                               type: object
+                              x-kubernetes-map-type: atomic
                           type: object
-                          x-kubernetes-map-type: atomic
+                        accessKeySecret:
+                          description: AccessKeySecret points to the AWS access key
+                            secret to be used for authentication.
+                          nullable: true
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
+                        credentials:
+                          description: Credentials points to the secret containing
+                            the "credentials file" to be used for authentication.
+                            Mostly used for authentication in STS-enabled clusters.
+                          nullable: true
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
                         groupBy:
                           description: GroupBy defines the strategy for grouping logstreams
                           enum:
@@ -876,6 +894,28 @@ spec:
                           type: string
                         region:
                           type: string
+                        roleARN:
+                          description: RoleARN points to the secret containing the
+                            role ARN to be used for authentication. This is used for
+                            authentication in STS-enabled clusters.
+                          nullable: true
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
                         tuning:
                           description: Tuning specs tuning for the output
                           nullable: true
@@ -932,60 +972,52 @@ spec:
                     elasticsearch:
                       nullable: true
                       properties:
-                        authorization:
-                          description: Authorization specs authorization for communicating
-                            with the receiver
-                          properties:
-                            name:
-                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                TODO: Add other useful fields. apiVersion, kind, uid?'
-                              type: string
-                            password:
-                              description: Password.  Assumed to be 'password' if
-                                not defined
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
-                            token:
-                              description: Token is the bearer token to use for authorization
-                                requests. Assumed to be 'token' if not defined
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                                secret:
-                                  description: The secret containing configuration
-                                    or TLS information
-                                  properties:
-                                    name:
-                                      description: 'Name of the referent. More info:
-                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                        TODO: Add other useful fields. apiVersion,
-                                        kind, uid?'
-                                      type: string
-                                  type: object
-                                  x-kubernetes-map-type: atomic
-                              type: object
-                            username:
-                              description: Username.  Assumed to be 'username' if
-                                not defined
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
-                          type: object
-                          x-kubernetes-map-type: atomic
                         index:
                           description: Index is the tenant for the logs. This supports
                             template syntax to allow dynamic per-event values
                           nullable: true
                           type: string
+                        password:
+                          description: Password to use for authenticating requests.
+                          nullable: true
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
+                        token:
+                          description: Token specifies a bearer token to be used for
+                            authenticating requests.
+                          nullable: true
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
                         tuning:
                           description: Tuning specs tuning for the output
                           nullable: true
@@ -1035,6 +1067,26 @@ spec:
                               format: int64
                               type: integer
                           type: object
+                        username:
+                          description: Username to use for authenticating requests.
+                          nullable: true
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
                         version:
                           description: 'Version specifies the version of Elasticsearch
                             to be used. Must be one of: 6-8, where 8 is the default'
@@ -1047,28 +1099,29 @@ spec:
                         organizationID, folderID, or projectID must be set.
                       nullable: true
                       properties:
-                        authorization:
-                          description: Authorization specs authorization for communicating
-                            with the receiver
-                          properties:
-                            credentials:
-                              description: Credentials path to `google-application-credentials.json`.
-                                Assumed to be `google-application-credentials.json`
-                                if not defined.
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
-                            name:
-                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                TODO: Add other useful fields. apiVersion, kind, uid?'
-                              type: string
-                          type: object
-                          x-kubernetes-map-type: atomic
                         billingAccountId:
                           type: string
+                        credentials:
+                          description: Credentials points to the secret containing
+                            the `google-application-credentials.json`.
+                          nullable: true
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
                         folderId:
                           type: string
                         logId:
@@ -1081,59 +1134,10 @@ spec:
                           type: string
                       type: object
                     http:
-                      description: Http provided configuration for sending json encoded
-                        logs to a generic http endpoint.
+                      description: HTTP provided configuration for sending json encoded
+                        logs to a generic HTTP endpoint.
                       nullable: true
                       properties:
-                        authorization:
-                          description: Authorization specs authorization for communicating
-                            with the receiver
-                          properties:
-                            name:
-                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                TODO: Add other useful fields. apiVersion, kind, uid?'
-                              type: string
-                            password:
-                              description: Password.  Assumed to be 'password' if
-                                not defined
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
-                            token:
-                              description: Token is the bearer token to use for authorization
-                                requests. Assumed to be 'token' if not defined
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                                secret:
-                                  description: The secret containing configuration
-                                    or TLS information
-                                  properties:
-                                    name:
-                                      description: 'Name of the referent. More info:
-                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                        TODO: Add other useful fields. apiVersion,
-                                        kind, uid?'
-                                      type: string
-                                  type: object
-                                  x-kubernetes-map-type: atomic
-                              type: object
-                            username:
-                              description: Username.  Assumed to be 'username' if
-                                not defined
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
-                          type: object
-                          x-kubernetes-map-type: atomic
                         headers:
                           additionalProperties:
                             type: string
@@ -1153,10 +1157,51 @@ spec:
                           - TRACE
                           - PATCH
                           type: string
+                        password:
+                          description: Password to use for authenticating requests.
+                          nullable: true
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
                         timeout:
                           description: Timeout specifies the Http request timeout
                             in seconds. If not set, 10secs is used.
                           type: integer
+                        token:
+                          description: Token specifies a bearer token to be used for
+                            authenticating requests.
+                          nullable: true
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
                         tuning:
                           description: Tuning specs tuning for the output
                           nullable: true
@@ -1219,53 +1264,32 @@ spec:
                             See the `secret` field for more details."
                           pattern: ^$|[a-zA-z]+:\/\/.*
                           type: string
+                        username:
+                          description: Username to use for authenticating requests.
+                          nullable: true
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
                       type: object
                     kafka:
                       description: 'Kafka provides optional extra properties for `type:
                         kafka`'
                       nullable: true
                       properties:
-                        authorization:
-                          description: Authorization specs authorization for communicating
-                            with the receiver
-                          properties:
-                            name:
-                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                TODO: Add other useful fields. apiVersion, kind, uid?'
-                              type: string
-                            saslEnabled:
-                              description: SASLEnabled assumed key sasl.enable and
-                                disabled by default. Override as needed
-                              type: boolean
-                            saslMechanisms:
-                              description: SASLMechanisms assumed key sasl.mechanisms.
-                                Override as needed
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
-                            saslPassword:
-                              description: SASLPassword assumed key password. Override
-                                as needed
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
-                            saslUsername:
-                              description: SASLUsername assumed key username. Override
-                                as needed
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
-                          type: object
-                          x-kubernetes-map-type: atomic
                         brokers:
                           description: Brokers specifies the list of broker endpoints
                             of a Kafka cluster. The list represents only the initial
@@ -1278,6 +1302,55 @@ spec:
                           items:
                             type: string
                           type: array
+                        sasl:
+                          description: SASL contains options configuring SASL authentication.
+                          properties:
+                            mechanism:
+                              description: Mechanism sets the SASL mechanism to use.
+                              type: string
+                            password:
+                              description: Username points to the secret to be used
+                                as SASL password.
+                              properties:
+                                key:
+                                  description: Name of the key used to get the value
+                                    in either the referenced ConfigMap or Secret.
+                                  type: string
+                                secret:
+                                  description: Use Secret if the value should be sourced
+                                    from a Secret in the same namespace.
+                                  properties:
+                                    name:
+                                      description: 'Name of the referent. More info:
+                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                        TODO: Add other useful fields. apiVersion,
+                                        kind, uid?'
+                                      type: string
+                                  type: object
+                                  x-kubernetes-map-type: atomic
+                              type: object
+                            username:
+                              description: Username points to the secret to be used
+                                as SASL username.
+                              properties:
+                                key:
+                                  description: Name of the key used to get the value
+                                    in either the referenced ConfigMap or Secret.
+                                  type: string
+                                secret:
+                                  description: Use Secret if the value should be sourced
+                                    from a Secret in the same namespace.
+                                  properties:
+                                    name:
+                                      description: 'Name of the referent. More info:
+                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                        TODO: Add other useful fields. apiVersion,
+                                        kind, uid?'
+                                      type: string
+                                  type: object
+                                  x-kubernetes-map-type: atomic
+                              type: object
+                          type: object
                         topic:
                           description: Topic specifies the target topic to send logs
                             to.
@@ -1340,24 +1413,6 @@ spec:
                         `type: loki`'
                       nullable: true
                       properties:
-                        authorization:
-                          description: Authorization specs authorization for communicating
-                            with the receiver
-                          properties:
-                            name:
-                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                TODO: Add other useful fields. apiVersion, kind, uid?'
-                              type: string
-                            token:
-                              description: Token is the bearer token to use for authorization
-                                requests
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
-                          type: object
-                          x-kubernetes-map-type: atomic
                         labelKeys:
                           description: "LabelKeys is a list of log record keys that
                             will be used as Loki labels with the corresponding log
@@ -1378,6 +1433,47 @@ spec:
                           items:
                             type: string
                           type: array
+                        password:
+                          description: Password to use for authenticating requests.
+                          nullable: true
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
+                        token:
+                          description: Token specifies a bearer token to be used for
+                            authenticating requests.
+                          nullable: true
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
                         tuning:
                           description: Tuning specs tuning for the output
                           properties:
@@ -1425,6 +1521,26 @@ spec:
                               format: int64
                               type: integer
                           type: object
+                        username:
+                          description: Username to use for authenticating requests.
+                          nullable: true
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
                       type: object
                     name:
                       description: Name used to refer to the output from a `pipeline`.
@@ -1451,28 +1567,31 @@ spec:
                         (''splunk_hec_logs'' after Vector 0.23'
                       nullable: true
                       properties:
-                        authorization:
-                          description: Authorization specs authorization for communicating
-                            with the receiver
-                          properties:
-                            name:
-                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                TODO: Add other useful fields. apiVersion, kind, uid?'
-                              type: string
-                            token:
-                              description: Token is the splunk HEC token
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
-                          type: object
-                          x-kubernetes-map-type: atomic
                         index:
                           description: Index is the tenant for the logs. This supports
                             template syntax to allow dynamic per-event values
                           nullable: true
                           type: string
+                        token:
+                          description: Token points to the secret containing the Splunk
+                            HEC token used for authenticating requests.
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
                         tuning:
                           description: Tuning specs tuning for the output
                           nullable: true
@@ -1687,8 +1806,9 @@ spec:
                               type: object
                               x-kubernetes-map-type: atomic
                           type: object
-                        passphrase:
-                          description: Passphrase can be used to set a TLS passphrase.
+                        keyPassphrase:
+                          description: KeyPassphrase points to the passphrase used
+                            to unlock the private key.
                           nullable: true
                           properties:
                             key:
