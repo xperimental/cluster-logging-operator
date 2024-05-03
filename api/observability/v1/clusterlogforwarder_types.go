@@ -43,10 +43,6 @@ type ClusterLogForwarderSpec struct {
 
 	// Outputs are named destinations for log messages.
 	//
-	// There is a built-in output named `default` which forwards to the default
-	// openshift log store. You can define outputs to forward to other stores or
-	// log processors, inside or outside the cluster.
-	//
 	// +optional
 	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Forwarder Outputs"
 	Outputs []OutputSpec `json:"outputs,omitempty"`
@@ -117,10 +113,6 @@ type PipelineSpec struct {
 	InputRefs []string `json:"inputRefs,omitempty"`
 
 	// OutputRefs lists the names (`output.name`) of outputs from this pipeline.
-	//
-	// The following built-in names are always available:
-	//
-	// 'default' Output to the default log store provided by ClusterLogging.
 	//
 	// +required
 	// +listType:=map
