@@ -557,11 +557,17 @@ spec:
                       nullable: true
                       properties:
                         sources:
-                          description: 'Sources defines the list of audit sources
-                            to collect. This field is optional and its exclusion results
-                            in the collection of all audit sources. Valid sources
-                            are: kubeAPI, openshiftAPI, auditd, ovn'
+                          description: Sources defines the list of audit sources to
+                            collect. This field is optional and its exclusion results
+                            in the collection of all audit sources.
                           items:
+                            description: AuditSource defines which type of audit log
+                              source is used.
+                            enum:
+                            - auditd
+                            - kubeAPI
+                            - openshiftAPI
+                            - ovn
                             type: string
                           type: array
                       type: object
@@ -570,11 +576,15 @@ spec:
                       nullable: true
                       properties:
                         sources:
-                          description: "Sources defines the list of infrastructure
+                          description: Sources defines the list of infrastructure
                             sources to collect. This field is optional and omission
                             results in the collection of all infrastructure sources.
-                            \n Valid sources are: node, container"
                           items:
+                            description: InfrastructureSource defines the type of
+                              infrastructure log source to use.
+                            enum:
+                            - container
+                            - node
                             type: string
                           type: array
                       type: object
@@ -714,13 +724,14 @@ spec:
                     type:
                       description: Type of output sink.
                       enum:
-                      - application
                       - audit
+                      - application
                       - infrastructure
                       - receiver
                       type: string
                   required:
                   - name
+                  - type
                   type: object
                 type: array
               outputs:
@@ -774,20 +785,19 @@ spec:
                           nullable: true
                           properties:
                             delivery:
-                              default: AtLeastOnce
-                              description: "Delivery mode for log forwarding. \n -
-                                AtLeastOnce (default): if the forwarder crashes or
-                                is re-started, any logs that were read before the
-                                crash but not sent to their destination will be re-read
-                                and re-sent. Note it is possible that some logs are
-                                duplicated in the event of a crash - log records are
-                                delivered at-least-once. - AtMostOnce: The forwarder
-                                makes no effort to recover logs lost during a crash.
-                                This mode may give better throughput, but could result
-                                in more log loss."
+                              description: "DeliveryMode sets the delivery mode for
+                                log forwarding. \n - AtLeastOnce (default): if the
+                                forwarder crashes or is re-started, any logs that
+                                were read before the crash but not sent to their destination
+                                will be re-read and re-sent. Note it is possible that
+                                some logs are duplicated in the event of a crash -
+                                log records are delivered at-least-once. - AtMostOnce:
+                                The forwarder makes no effort to recover logs lost
+                                during a crash. This mode may give better throughput,
+                                but could result in more log loss."
                               enum:
-                              - AtLeastOnce
-                              - AtMostOnce
+                              - atLeastOnce
+                              - atMostOnce
                               type: string
                             maxRetryDuration:
                               description: MaxRetryDuration is the maximum time to
@@ -933,20 +943,19 @@ spec:
                               - lz4
                               type: string
                             delivery:
-                              default: AtLeastOnce
-                              description: "Delivery mode for log forwarding. \n -
-                                AtLeastOnce (default): if the forwarder crashes or
-                                is re-started, any logs that were read before the
-                                crash but not sent to their destination will be re-read
-                                and re-sent. Note it is possible that some logs are
-                                duplicated in the event of a crash - log records are
-                                delivered at-least-once. - AtMostOnce: The forwarder
-                                makes no effort to recover logs lost during a crash.
-                                This mode may give better throughput, but could result
-                                in more log loss."
+                              description: "DeliveryMode sets the delivery mode for
+                                log forwarding. \n - AtLeastOnce (default): if the
+                                forwarder crashes or is re-started, any logs that
+                                were read before the crash but not sent to their destination
+                                will be re-read and re-sent. Note it is possible that
+                                some logs are duplicated in the event of a crash -
+                                log records are delivered at-least-once. - AtMostOnce:
+                                The forwarder makes no effort to recover logs lost
+                                during a crash. This mode may give better throughput,
+                                but could result in more log loss."
                               enum:
-                              - AtLeastOnce
-                              - AtMostOnce
+                              - atLeastOnce
+                              - atMostOnce
                               type: string
                             maxRetryDuration:
                               description: MaxRetryDuration is the maximum time to
@@ -1044,20 +1053,19 @@ spec:
                               - zstd
                               type: string
                             delivery:
-                              default: AtLeastOnce
-                              description: "Delivery mode for log forwarding. \n -
-                                AtLeastOnce (default): if the forwarder crashes or
-                                is re-started, any logs that were read before the
-                                crash but not sent to their destination will be re-read
-                                and re-sent. Note it is possible that some logs are
-                                duplicated in the event of a crash - log records are
-                                delivered at-least-once. - AtMostOnce: The forwarder
-                                makes no effort to recover logs lost during a crash.
-                                This mode may give better throughput, but could result
-                                in more log loss."
+                              description: "DeliveryMode sets the delivery mode for
+                                log forwarding. \n - AtLeastOnce (default): if the
+                                forwarder crashes or is re-started, any logs that
+                                were read before the crash but not sent to their destination
+                                will be re-read and re-sent. Note it is possible that
+                                some logs are duplicated in the event of a crash -
+                                log records are delivered at-least-once. - AtMostOnce:
+                                The forwarder makes no effort to recover logs lost
+                                during a crash. This mode may give better throughput,
+                                but could result in more log loss."
                               enum:
-                              - AtLeastOnce
-                              - AtMostOnce
+                              - atLeastOnce
+                              - atMostOnce
                               type: string
                             maxRetryDuration:
                               description: MaxRetryDuration is the maximum time to
@@ -1242,20 +1250,19 @@ spec:
                               - zlib
                               type: string
                             delivery:
-                              default: AtLeastOnce
-                              description: "Delivery mode for log forwarding. \n -
-                                AtLeastOnce (default): if the forwarder crashes or
-                                is re-started, any logs that were read before the
-                                crash but not sent to their destination will be re-read
-                                and re-sent. Note it is possible that some logs are
-                                duplicated in the event of a crash - log records are
-                                delivered at-least-once. - AtMostOnce: The forwarder
-                                makes no effort to recover logs lost during a crash.
-                                This mode may give better throughput, but could result
-                                in more log loss."
+                              description: "DeliveryMode sets the delivery mode for
+                                log forwarding. \n - AtLeastOnce (default): if the
+                                forwarder crashes or is re-started, any logs that
+                                were read before the crash but not sent to their destination
+                                will be re-read and re-sent. Note it is possible that
+                                some logs are duplicated in the event of a crash -
+                                log records are delivered at-least-once. - AtMostOnce:
+                                The forwarder makes no effort to recover logs lost
+                                during a crash. This mode may give better throughput,
+                                but could result in more log loss."
                               enum:
-                              - AtLeastOnce
-                              - AtMostOnce
+                              - atLeastOnce
+                              - atMostOnce
                               type: string
                             maxRetryDuration:
                               description: MaxRetryDuration is the maximum time to
@@ -1395,20 +1402,19 @@ spec:
                               - lz4
                               type: string
                             delivery:
-                              default: AtLeastOnce
-                              description: "Delivery mode for log forwarding. \n -
-                                AtLeastOnce (default): if the forwarder crashes or
-                                is re-started, any logs that were read before the
-                                crash but not sent to their destination will be re-read
-                                and re-sent. Note it is possible that some logs are
-                                duplicated in the event of a crash - log records are
-                                delivered at-least-once. - AtMostOnce: The forwarder
-                                makes no effort to recover logs lost during a crash.
-                                This mode may give better throughput, but could result
-                                in more log loss."
+                              description: "DeliveryMode sets the delivery mode for
+                                log forwarding. \n - AtLeastOnce (default): if the
+                                forwarder crashes or is re-started, any logs that
+                                were read before the crash but not sent to their destination
+                                will be re-read and re-sent. Note it is possible that
+                                some logs are duplicated in the event of a crash -
+                                log records are delivered at-least-once. - AtMostOnce:
+                                The forwarder makes no effort to recover logs lost
+                                during a crash. This mode may give better throughput,
+                                but could result in more log loss."
                               enum:
-                              - AtLeastOnce
-                              - AtMostOnce
+                              - atLeastOnce
+                              - atMostOnce
                               type: string
                             maxWrite:
                               anyOf:
@@ -1524,20 +1530,19 @@ spec:
                               - snappy
                               type: string
                             delivery:
-                              default: AtLeastOnce
-                              description: "Delivery mode for log forwarding. \n -
-                                AtLeastOnce (default): if the forwarder crashes or
-                                is re-started, any logs that were read before the
-                                crash but not sent to their destination will be re-read
-                                and re-sent. Note it is possible that some logs are
-                                duplicated in the event of a crash - log records are
-                                delivered at-least-once. - AtMostOnce: The forwarder
-                                makes no effort to recover logs lost during a crash.
-                                This mode may give better throughput, but could result
-                                in more log loss."
+                              description: "DeliveryMode sets the delivery mode for
+                                log forwarding. \n - AtLeastOnce (default): if the
+                                forwarder crashes or is re-started, any logs that
+                                were read before the crash but not sent to their destination
+                                will be re-read and re-sent. Note it is possible that
+                                some logs are duplicated in the event of a crash -
+                                log records are delivered at-least-once. - AtMostOnce:
+                                The forwarder makes no effort to recover logs lost
+                                during a crash. This mode may give better throughput,
+                                but could result in more log loss."
                               enum:
-                              - AtLeastOnce
-                              - AtMostOnce
+                              - atLeastOnce
+                              - atMostOnce
                               type: string
                             maxRetryDuration:
                               description: MaxRetryDuration is the maximum time to
@@ -1634,20 +1639,19 @@ spec:
                           nullable: true
                           properties:
                             delivery:
-                              default: AtLeastOnce
-                              description: "Delivery mode for log forwarding. \n -
-                                AtLeastOnce (default): if the forwarder crashes or
-                                is re-started, any logs that were read before the
-                                crash but not sent to their destination will be re-read
-                                and re-sent. Note it is possible that some logs are
-                                duplicated in the event of a crash - log records are
-                                delivered at-least-once. - AtMostOnce: The forwarder
-                                makes no effort to recover logs lost during a crash.
-                                This mode may give better throughput, but could result
-                                in more log loss."
+                              description: "DeliveryMode sets the delivery mode for
+                                log forwarding. \n - AtLeastOnce (default): if the
+                                forwarder crashes or is re-started, any logs that
+                                were read before the crash but not sent to their destination
+                                will be re-read and re-sent. Note it is possible that
+                                some logs are duplicated in the event of a crash -
+                                log records are delivered at-least-once. - AtMostOnce:
+                                The forwarder makes no effort to recover logs lost
+                                during a crash. This mode may give better throughput,
+                                but could result in more log loss."
                               enum:
-                              - AtLeastOnce
-                              - AtMostOnce
+                              - atLeastOnce
+                              - atMostOnce
                               type: string
                             maxRetryDuration:
                               description: MaxRetryDuration is the maximum time to
@@ -1968,19 +1972,18 @@ spec:
                       nullable: true
                       properties:
                         delivery:
-                          default: AtLeastOnce
-                          description: "Delivery mode for log forwarding. \n - AtLeastOnce
-                            (default): if the forwarder crashes or is re-started,
-                            any logs that were read before the crash but not sent
-                            to their destination will be re-read and re-sent. Note
-                            it is possible that some logs are duplicated in the event
-                            of a crash - log records are delivered at-least-once.
+                          description: "DeliveryMode sets the delivery mode for log
+                            forwarding. \n - AtLeastOnce (default): if the forwarder
+                            crashes or is re-started, any logs that were read before
+                            the crash but not sent to their destination will be re-read
+                            and re-sent. Note it is possible that some logs are duplicated
+                            in the event of a crash - log records are delivered at-least-once.
                             - AtMostOnce: The forwarder makes no effort to recover
                             logs lost during a crash. This mode may give better throughput,
                             but could result in more log loss."
                           enum:
-                          - AtLeastOnce
-                          - AtMostOnce
+                          - atLeastOnce
+                          - atMostOnce
                           type: string
                         maxRetryDuration:
                           description: MaxRetryDuration is the maximum time to wait
