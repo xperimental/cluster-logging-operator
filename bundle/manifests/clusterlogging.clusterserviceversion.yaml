@@ -178,7 +178,7 @@ metadata:
     certified: "false"
     console.openshift.io/plugins: '["logging-view-plugin"]'
     containerImage: quay.io/openshift-logging/cluster-logging-operator:latest
-    createdAt: "2024-05-03T12:30:08Z"
+    createdAt: "2024-05-03T12:51:40Z"
     description: The Red Hat OpenShift Logging Operator for OCP provides a means for
       configuring and managing your aggregated logging stack.
     features.operators.openshift.io/cnf: "false"
@@ -319,6 +319,12 @@ spec:
           ConfigMap or Secret.
         displayName: Key Name
         path: inputs[0].receiver.tls.key.key
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
+        displayName: Key Name
+        path: inputs[0].receiver.tls.keyPassphrase.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Outputs are named destinations for log messages.
