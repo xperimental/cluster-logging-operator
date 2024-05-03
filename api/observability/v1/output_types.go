@@ -395,6 +395,8 @@ type ElasticsearchTuningSpec struct {
 type Elasticsearch struct {
 	AuthorizationSpec `json:",inline"`
 
+	URLSpec `json:",inline"`
+
 	// Tuning specs tuning for the output
 	//
 	// +optional
