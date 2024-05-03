@@ -149,10 +149,7 @@ spec:
         path: inputs[0].receiver.tls.key.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: "Outputs are named destinations for log messages. \n There is
-          a built-in output named `default` which forwards to the default openshift
-          log store. You can define outputs to forward to other stores or log processors,
-          inside or outside the cluster."
+      - description: Outputs are named destinations for log messages.
         displayName: Forwarder Outputs
         path: outputs
       - description: Name of the key used to get the value in either the referenced
