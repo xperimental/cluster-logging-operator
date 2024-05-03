@@ -223,9 +223,6 @@ type ReceiverType string
 const (
 	ReceiverTypeHttp   ReceiverType = "http"
 	ReceiverTypeSyslog ReceiverType = "syslog"
-
-	// InputReceiverFormatKubeAPIAudit Log events in k8s list format, e.g. API audit log events.
-	InputReceiverFormatKubeAPIAudit = "kubeAPIAudit"
 )
 
 var (
