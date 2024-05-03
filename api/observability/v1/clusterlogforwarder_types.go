@@ -16,7 +16,9 @@ package v1
 
 import (
 	"fmt"
+
 	"github.com/openshift/cluster-logging-operator/internal/status"
+
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -184,22 +186,6 @@ type SecretKey struct {
 	// +required
 	// +kubebuilder:validation:Required
 	Secret *corev1.LocalObjectReference `json:"secret,omitempty"`
-}
-
-type KeySpec struct {
-	// The key name found in the resource
-	//
-	// +kubebuilder:validation:minLength:=1
-	// +required
-	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Key Name",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}
-	Key string `json:"key,omitempty"`
-}
-
-// PriorityKeySpec spec a key from a specific key/value resource type that takes precedence over any defaults
-type PriorityKeySpec struct {
-	ResourceTypeSpec `json:",inline"`
-
-	KeySpec `json:",inline"`
 }
 
 // ClusterLogForwarderStatus defines the observed state of ClusterLogForwarder

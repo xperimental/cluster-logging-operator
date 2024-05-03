@@ -17,7 +17,6 @@ package v1
 import (
 	openshiftv1 "github.com/openshift/api/config/v1"
 	"github.com/openshift/cluster-logging-operator/internal/utils/sets"
-	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"time"
 )
@@ -112,11 +111,11 @@ type OutputTLSSpec struct {
 	// +nullable
 	Key *SecretKey `json:"key,omitempty"`
 
-	// Passphrase can be used to set a TLS passphrase.
+	// KeyPassphrase points to the passphrase used to unlock the private key.
 	//
 	// +optional
 	// +nullable
-	Passphrase *SecretKey `json:"passphrase,omitempty"`
+	KeyPassphrase *SecretKey `json:"keyPassphrase,omitempty"`
 
 	// If InsecureSkipVerify is true, then the TLS client will be configured to skip validating server certificates.
 	//
@@ -228,50 +227,41 @@ type OutputTypeSpec struct {
 
 	// +optional
 	// +nullable
-	Http *Http `json:"http,omitempty"`
+	HTTP *HTTP `json:"http,omitempty"`
 
 	// +optional
 	// +nullable
 	AzureMonitor *AzureMonitor `json:"azureMonitor,omitempty"`
 }
 
-// AuthorizationSpec  is the spec for providing typical authorization credentials
+// AuthorizationSpec provides options for setting common authorization credentials.
+// This is mostly used with outputs using HTTP or a derivative as transport.
 type AuthorizationSpec struct {
-	v1.LocalObjectReference `json:",inline"`
-
-	// Token is the bearer token to use for authorization requests. Assumed to be 'token' if not defined
+	// Token specifies a bearer token to be used for authenticating requests.
 	//
 	// +optional
 	// +nullable
-	Token *PriorityKeySpec `json:"token,omitempty"`
+	Token *SecretKey `json:"token,omitempty"`
 
-	// Username.  Assumed to be 'username' if not defined
+	// Username to use for authenticating requests.
 	//
 	// +optional
 	// +nullable
-	Username *KeySpec `json:"username,omitempty"`
+	Username *SecretKey `json:"username,omitempty"`
 
-	// Password.  Assumed to be 'password' if not defined
-	// +optional
-	// +nullable
-	Password *KeySpec `json:"password,omitempty"`
-}
-
-type AzureMonitorAuthorizationSpec struct {
-	v1.LocalObjectReference `json:",inline"`
-
-	// SharedKey is the `shared_key`
+	// Password to use for authenticating requests.
 	//
 	// +optional
 	// +nullable
-	SharedKey *KeySpec `json:"sharedKey,omitempty"`
+	Password *SecretKey `json:"password,omitempty"`
 }
 
 type AzureMonitor struct {
-	// Authorization specs authorization for communicating with the receiver
+	// SharedKey points to the secret containing the shared key used for authenticating requests.
 	//
-	// +required
-	Authorization AzureMonitorAuthorizationSpec `json:"authorization,omitempty"`
+	// +optional
+	// +nullable
+	SharedKey *SecretKey `json:"sharedKey,omitempty"`
 
 	// CustomerId che unique identifier for the Log Analytics workspace.
 	// https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-collector-api?tabs=powershell#request-uri-parameters
@@ -301,35 +291,6 @@ type AzureMonitor struct {
 	Tuning *BaseOutputTuningSpec `json:"tuning,omitempty"`
 }
 
-type CloudwatchAuthorizationSpec struct {
-	v1.LocalObjectReference `json:",inline"`
-
-	// AWSAccessKeyID. Assumed to be `aws_secret_access_key` if not defined
-	//
-	// +optional
-	// +nullable
-	AWSAccessKeyID *KeySpec `json:"awsAccessKeyID,omitempty"`
-
-	// AWSSecretAccessKey. Assumed to be `aws_access_key_id` if not defined
-	//
-	// +optional
-	// +nullable
-	AWSSecretAccessKey *KeySpec `json:"awsSecretAccessKey,omitempty"`
-
-	// Credentials specifies the `credentials`  for STS enabled clusters.  Assumed to be 'credentials' if not defined
-	//
-	// +optional
-	// +nullable
-	Credentials *KeySpec `json:"credentials,omitempty"`
-
-	// RoleArn specifies the `role_arn specifying a properly formatted role arn for STS enabled clusters
-	// or for sts-enabled clusters `credentials` or `role_arn` key specifying a properly formatted role arn
-	//
-	// +optional
-	// +nullable
-	RoleArn *KeySpec `json:"roleARN,omitempty"`
-}
-
 type CloudwatchTuningSpec struct {
 	BaseOutputTuningSpec `json:",inline"`
 
@@ -344,10 +305,31 @@ type CloudwatchTuningSpec struct {
 
 // Cloudwatch provides configuration for the output type `cloudwatch`
 type Cloudwatch struct {
-	// Authorization specs authorization for communicating with the receiver
+	// AccessKeyID points to the AWS access key id to be used for authentication.
 	//
-	// +required
-	Authorization CloudwatchAuthorizationSpec `json:"authorization,omitempty"`
+	// +optional
+	// +nullable
+	AccessKeyID *SecretKey `json:"accessKeyID,omitempty"`
+
+	// AccessKeySecret points to the AWS access key secret to be used for authentication.
+	//
+	// +optional
+	// +nullable
+	AccessKeySecret *SecretKey `json:"accessKeySecret,omitempty"`
+
+	// Credentials points to the secret containing the "credentials file" to be used for authentication.
+	// Mostly used for authentication in STS-enabled clusters.
+	//
+	// +optional
+	// +nullable
+	Credentials *SecretKey `json:"credentials,omitempty"`
+
+	// RoleARN points to the secret containing the role ARN to be used for authentication.
+	// This is used for authentication in STS-enabled clusters.
+	//
+	// +optional
+	// +nullable
+	RoleARN *SecretKey `json:"roleARN,omitempty"`
 
 	// Tuning specs tuning for the output
 	//
@@ -398,10 +380,6 @@ type IndexSpec struct {
 	Index string `json:"index,omitempty"`
 }
 
-type ElasticsearchAuthorizationSpec struct {
-	AuthorizationSpec `json:",inline"`
-}
-
 type ElasticsearchTuningSpec struct {
 	BaseOutputTuningSpec `json:",inline"`
 
@@ -414,10 +392,7 @@ type ElasticsearchTuningSpec struct {
 }
 
 type Elasticsearch struct {
-	// Authorization specs authorization for communicating with the receiver
-	//
-	// +required
-	Authorization ElasticsearchAuthorizationSpec `json:"authorization,omitempty"`
+	AuthorizationSpec `json:",inline"`
 
 	// Tuning specs tuning for the output
 	//
@@ -436,24 +411,14 @@ type Elasticsearch struct {
 	Version int `json:"version,omitempty"`
 }
 
-type GoogleCloudLoggingAuthorizationSpec struct {
-	v1.LocalObjectReference `json:",inline"`
-
-	// Credentials path to `google-application-credentials.json`.
-	// Assumed to be `google-application-credentials.json` if not defined.
-	//
-	// +optional
-	// +nullable
-	Credentials *KeySpec `json:"credentials,omitempty"`
-}
-
 // GoogleCloudLogging provides configuration for sending logs to Google Cloud Logging.
 // Exactly one of billingAccountID, organizationID, folderID, or projectID must be set.
 type GoogleCloudLogging struct {
-	// Authorization specs authorization for communicating with the receiver
+	// Credentials points to the secret containing the `google-application-credentials.json`.
 	//
 	// +optional
-	Authorization GoogleCloudLoggingAuthorizationSpec `json:"authorization,omitempty"`
+	// +nullable
+	Credentials *SecretKey `json:"credentials,omitempty"`
 
 	// +optional
 	BillingAccountID string `json:"billingAccountId,omitempty"`
@@ -482,12 +447,9 @@ type HttpTuningSpec struct {
 	Compression string `json:"compression,omitempty"`
 }
 
-// Http provided configuration for sending json encoded logs to a generic http endpoint.
-type Http struct {
-	// Authorization specs authorization for communicating with the receiver
-	//
-	// +required
-	Authorization AuthorizationSpec `json:"authorization,omitempty"`
+// HTTP provided configuration for sending json encoded logs to a generic HTTP endpoint.
+type HTTP struct {
+	AuthorizationSpec `json:",inline"`
 
 	// Tuning specs tuning for the output
 	//
@@ -530,41 +492,29 @@ type KafkaTuningSpec struct {
 	Compression string `json:"compression,omitempty"`
 }
 
-// KafkaAuthorizationSpec
-type KafkaAuthorizationSpec struct {
-	v1.LocalObjectReference `json:",inline"`
-
-	// SASLEnabled assumed key sasl.enable and disabled by default. Override as needed
+type SASLAuthorization struct {
+	// Username points to the secret to be used as SASL username.
 	//
 	// +optional
-	SASLEnabled bool `json:"saslEnabled,omitempty"`
+	Username *SecretKey `json:"username,omitempty"`
 
-	// SASLUsername assumed key username. Override as needed
+	// Username points to the secret to be used as SASL password.
 	//
 	// +optional
-	// +nullable
-	SASLUsername *KeySpec `json:"saslUsername,omitempty"`
+	Password *SecretKey `json:"password,omitempty"`
 
-	// SASLPassword assumed key password. Override as needed
+	// Mechanism sets the SASL mechanism to use.
 	//
 	// +optional
-	// +nullable
-	SASLPassword *KeySpec `json:"saslPassword,omitempty"`
-
-	// SASLMechanisms assumed key sasl.mechanisms. Override as needed
-	//
-	// +optional
-	// +nullable
-	SASLMechanisms *KeySpec `json:"saslMechanisms,omitempty"`
+	Mechanism string `json:"mechanism,omitempty"`
 }
 
 // Kafka provides optional extra properties for `type: kafka`
 type Kafka struct {
-
-	// Authorization specs authorization for communicating with the receiver
+	// SASL contains options configuring SASL authentication.
 	//
-	// +required
-	Authorization KafkaAuthorizationSpec `json:"authorization,omitempty"`
+	// +optional
+	SASL *SASLAuthorization `json:"sasl,omitempty"`
 
 	// Tuning specs tuning for the output
 	//
@@ -589,16 +539,6 @@ type Kafka struct {
 	Brokers []string `json:"brokers,omitempty"`
 }
 
-// LokiAuthorizationSpec  is the spec for providing typical authorization credentials
-type LokiAuthorizationSpec struct {
-	v1.LocalObjectReference `json:",inline"`
-
-	// Token is the bearer token to use for authorization requests
-	//
-	// +optional
-	Token *KeySpec `json:"token,omitempty"`
-}
-
 type LokiTuningSpec struct {
 	BaseOutputTuningSpec `json:",inline"`
 
@@ -612,10 +552,7 @@ type LokiTuningSpec struct {
 
 // LokiStack provides optional extra properties for `type: loki`
 type LokiStack struct {
-	// Authorization specs authorization for communicating with the receiver
-	//
-	// +required
-	Authorization LokiAuthorizationSpec `json:"authorization,omitempty"`
+	AuthorizationSpec `json:",inline"`
 
 	// Tuning specs tuning for the output
 	//
@@ -639,16 +576,6 @@ type LokiStack struct {
 	LabelKeys []string `json:"labelKeys,omitempty"`
 }
 
-// SplunkAuthorizationSpec  is the spec for providing typical authorization credentials
-type SplunkAuthorizationSpec struct {
-	v1.LocalObjectReference `json:",inline"`
-
-	// Token is the splunk HEC token
-	//
-	// +optional
-	Token *KeySpec `json:"token,omitempty"`
-}
-
 type SplunkTuningSpec struct {
 	BaseOutputTuningSpec `json:",inline"`
 }
@@ -656,10 +583,10 @@ type SplunkTuningSpec struct {
 // Splunk Deliver log data to Splunk’s HTTP Event Collector
 // Provides optional extra properties for `type: splunk_hec` ('splunk_hec_logs' after Vector 0.23
 type Splunk struct {
-	// Authorization specs authorization for communicating with the receiver
+	// Token points to the secret containing the Splunk HEC token used for authenticating requests.
 	//
-	// +required
-	Authorization SplunkAuthorizationSpec `json:"authorization,omitempty"`
+	// +optional
+	Token *SecretKey `json:"token,omitempty"`
 
 	// Tuning specs tuning for the output
 	//
