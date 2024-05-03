@@ -131,17 +131,20 @@ spec:
         path: inputs[0].application.tuning.rateLimitPerContainer.maxRecordsPerSecond
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:number
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: inputs[0].receiver.tls.cacert.key
+        path: inputs[0].receiver.tls.ca.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: inputs[0].receiver.tls.cert.key
+        path: inputs[0].receiver.tls.certificate.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
         path: inputs[0].receiver.tls.key.key
         x-descriptors:
@@ -243,24 +246,28 @@ spec:
         path: outputs[0].splunk.authorization.token.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].tls.resource.cacert.key
+        path: outputs[0].tls.ca.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].tls.resource.cert.key
+        path: outputs[0].tls.certificate.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].tls.resource.key.key
+        path: outputs[0].tls.key.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: The key name found in the resource
+      - description: Name of the key used to get the value in either the referenced
+          ConfigMap or Secret.
         displayName: Key Name
-        path: outputs[0].tls.resource.passphrase.key
+        path: outputs[0].tls.passphrase.key
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Pipelines forward the messages selected by a set of inputs to

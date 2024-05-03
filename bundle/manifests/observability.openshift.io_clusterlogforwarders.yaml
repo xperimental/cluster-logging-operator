@@ -611,17 +611,30 @@ spec:
                             of TLS connections.
                           nullable: true
                           properties:
-                            cacert:
-                              description: The CertificateAuthority to use. Assume
-                                ca-bundle.crt or override
+                            ca:
+                              description: CA can be used to specify a custom list
+                                of trusted certificate authorities.
                               nullable: true
                               properties:
+                                configMap:
+                                  description: Use ConfigMap if the value should be
+                                    sourced from a ConfigMap in the same namespace.
+                                  properties:
+                                    name:
+                                      description: 'Name of the referent. More info:
+                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                        TODO: Add other useful fields. apiVersion,
+                                        kind, uid?'
+                                      type: string
+                                  type: object
+                                  x-kubernetes-map-type: atomic
                                 key:
-                                  description: The key name found in the resource
+                                  description: Name of the key used to get the value
+                                    in either the referenced ConfigMap or Secret.
                                   type: string
                                 secret:
-                                  description: The secret containing configuration
-                                    or TLS information
+                                  description: Use Secret if the value should be sourced
+                                    from a Secret in the same namespace.
                                   properties:
                                     name:
                                       description: 'Name of the referent. More info:
@@ -632,35 +645,62 @@ spec:
                                   type: object
                                   x-kubernetes-map-type: atomic
                               type: object
-                            cert:
-                              description: The public certificate to use in PEM format.
-                                Assume tls.crt or override
+                            certificate:
+                              description: Certificate points to the server certificate
+                                to use.
                               nullable: true
                               properties:
+                                configMap:
+                                  description: Use ConfigMap if the value should be
+                                    sourced from a ConfigMap in the same namespace.
+                                  properties:
+                                    name:
+                                      description: 'Name of the referent. More info:
+                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                        TODO: Add other useful fields. apiVersion,
+                                        kind, uid?'
+                                      type: string
+                                  type: object
+                                  x-kubernetes-map-type: atomic
                                 key:
-                                  description: The key name found in the resource
+                                  description: Name of the key used to get the value
+                                    in either the referenced ConfigMap or Secret.
                                   type: string
+                                secret:
+                                  description: Use Secret if the value should be sourced
+                                    from a Secret in the same namespace.
+                                  properties:
+                                    name:
+                                      description: 'Name of the referent. More info:
+                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                        TODO: Add other useful fields. apiVersion,
+                                        kind, uid?'
+                                      type: string
+                                  type: object
+                                  x-kubernetes-map-type: atomic
                               type: object
                             key:
-                              description: The private certificate  to use in PEM
-                                format. Assume tls.key or override
+                              description: Key points to the private key of the server
+                                certificate.
                               nullable: true
                               properties:
                                 key:
-                                  description: The key name found in the resource
+                                  description: Name of the key used to get the value
+                                    in either the referenced ConfigMap or Secret.
                                   type: string
+                                secret:
+                                  description: Use Secret if the value should be sourced
+                                    from a Secret in the same namespace.
+                                  properties:
+                                    name:
+                                      description: 'Name of the referent. More info:
+                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                        TODO: Add other useful fields. apiVersion,
+                                        kind, uid?'
+                                      type: string
+                                  type: object
+                                  x-kubernetes-map-type: atomic
                               type: object
-                            secret:
-                              description: The secret containing configuration or
-                                TLS information
-                              properties:
-                                name:
-                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                    TODO: Add other useful fields. apiVersion, kind,
-                                    uid?'
-                                  type: string
-                              type: object
-                              x-kubernetes-map-type: atomic
                           type: object
                         type:
                           description: Type of Receiver plugin.
@@ -1557,66 +1597,107 @@ spec:
                         TLS client connections.
                       nullable: true
                       properties:
+                        ca:
+                          description: CA can be used to specify a custom list of
+                            trusted certificate authorities.
+                          nullable: true
+                          properties:
+                            configMap:
+                              description: Use ConfigMap if the value should be sourced
+                                from a ConfigMap in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
+                        certificate:
+                          description: Certificate points to the client certificate
+                            to use.
+                          nullable: true
+                          properties:
+                            configMap:
+                              description: Use ConfigMap if the value should be sourced
+                                from a ConfigMap in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
                         insecureSkipVerify:
                           description: "If InsecureSkipVerify is true, then the TLS
-                            client will be configured to ignore errors with certificates.
+                            client will be configured to skip validating server certificates.
                             \n This option is *not* recommended for production configurations."
                           type: boolean
-                        resource:
-                          description: Resource is the secret or configmap to search
-                            for
+                        key:
+                          description: Key points to the private key of the client
+                            certificate.
+                          nullable: true
                           properties:
-                            cacert:
-                              description: The CertificateAuthority to use.  Assumed
-                                to be ca-bundle.crt if not defined
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                                secret:
-                                  description: The secret containing configuration
-                                    or TLS information
-                                  properties:
-                                    name:
-                                      description: 'Name of the referent. More info:
-                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                        TODO: Add other useful fields. apiVersion,
-                                        kind, uid?'
-                                      type: string
-                                  type: object
-                                  x-kubernetes-map-type: atomic
-                              type: object
-                            cert:
-                              description: The public certificate to use in PEM format.
-                                Assumed to be tls.crt if not defined
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
                             key:
-                              description: The private certificate  to use in PEM
-                                format. Assumed to be tls.key if not defined
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
-                            passphrase:
-                              description: The TLS passphrase.  Assumed to be passphrase
-                                if not defined
-                              nullable: true
-                              properties:
-                                key:
-                                  description: The key name found in the resource
-                                  type: string
-                              type: object
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
                             secret:
-                              description: The secret containing configuration or
-                                TLS information
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
+                              properties:
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                    TODO: Add other useful fields. apiVersion, kind,
+                                    uid?'
+                                  type: string
+                              type: object
+                              x-kubernetes-map-type: atomic
+                          type: object
+                        passphrase:
+                          description: Passphrase can be used to set a TLS passphrase.
+                          nullable: true
+                          properties:
+                            key:
+                              description: Name of the key used to get the value in
+                                either the referenced ConfigMap or Secret.
+                              type: string
+                            secret:
+                              description: Use Secret if the value should be sourced
+                                from a Secret in the same namespace.
                               properties:
                                 name:
                                   description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
@@ -1628,7 +1709,7 @@ spec:
                           type: object
                         securityProfile:
                           description: TLSSecurityProfile is the security profile
-                            to apply to the output connection
+                            to apply to the output connection.
                           properties:
                             custom:
                               description: "custom is a user-defined TLS security
@@ -1782,7 +1863,7 @@ spec:
                 description: Pipelines forward the messages selected by a set of inputs
                   to a set of outputs.
                 items:
-                  description: PipelinesSpec link a set of inputs to a set of outputs.
+                  description: PipelineSpec link a set of inputs to a set of outputs.
                   properties:
                     filterRefs:
                       description: "Filters lists the names of filters to be applied
