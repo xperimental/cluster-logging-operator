@@ -16,7 +16,6 @@ package v1
 
 import (
 	openshiftv1 "github.com/openshift/api/config/v1"
-	"github.com/openshift/cluster-logging-operator/internal/utils/sets"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"time"
 )
@@ -24,22 +23,27 @@ import (
 // NOTE: The Enum validation on OutputSpec.Type must be updated if the list of
 // known types changes.
 
+// OutputType is used to define the type of output to be created.
+//
+// +kubebuilder:validation:Enum:=azureMonitor;cloudwatch;elasticsearch;http;kafka;lokiStack;googleCloudLogging;splunk;syslog
+type OutputType string
+
 // Output type constants, must match JSON tags of OutputTypeSpec fields.
 const (
-	OutputTypeAzureMonitor       = "azureMonitor"
-	OutputTypeCloudwatch         = "cloudwatch"
-	OutputTypeElasticsearch      = "elasticsearch"
-	OutputTypeGoogleCloudLogging = "googleCloudLogging"
-	OutputTypeHttp               = "http"
-	OutputTypeKafka              = "kafka"
-	OutputTypeLokiStack          = "lokiStack"
-	OutputTypeSplunk             = "splunk"
-	OutputTypeSyslog             = "syslog"
+	OutputTypeAzureMonitor       OutputType = "azureMonitor"
+	OutputTypeCloudwatch         OutputType = "cloudwatch"
+	OutputTypeElasticsearch      OutputType = "elasticsearch"
+	OutputTypeGoogleCloudLogging OutputType = "googleCloudLogging"
+	OutputTypeHttp               OutputType = "http"
+	OutputTypeKafka              OutputType = "kafka"
+	OutputTypeLokiStack          OutputType = "lokiStack"
+	OutputTypeSplunk             OutputType = "splunk"
+	OutputTypeSyslog             OutputType = "syslog"
 )
 
 var (
-	//OutputTypes is the set of supported output types
-	OutputTypes = sets.NewString(
+	// OutputTypes contains all supported output types.
+	OutputTypes = []OutputType{
 		OutputTypeAzureMonitor,
 		OutputTypeCloudwatch,
 		OutputTypeElasticsearch,
@@ -49,7 +53,7 @@ var (
 		OutputTypeLokiStack,
 		OutputTypeSplunk,
 		OutputTypeSyslog,
-	)
+	}
 )
 
 // OutputSpec defines a destination for log messages.
@@ -62,9 +66,8 @@ type OutputSpec struct {
 
 	// Type of output sink.
 	//
-	// +kubebuilder:validation:Enum:=azureMonitor;cloudwatch;elasticsearch;http;kafka;lokiStack;googleCloudLogging;splunk;syslog
 	// +required
-	Type string `json:"type,omitempty"`
+	Type OutputType `json:"type"`
 
 	OutputTypeSpec `json:",inline"`
 
