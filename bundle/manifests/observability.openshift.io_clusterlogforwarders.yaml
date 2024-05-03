@@ -1565,6 +1565,19 @@ spec:
                           - key
                           - secret
                           type: object
+                        target:
+                          description: Target points to the LokiStack resources that
+                            should be used as a target for the output.
+                          properties:
+                            name:
+                              description: Name of the in-cluster LokiStack resource.
+                              type: string
+                            namespace:
+                              description: Namespace of the in-cluster LokiStack resource.
+                              type: string
+                          required:
+                          - name
+                          type: object
                         token:
                           description: Token specifies a bearer token to be used for
                             authenticating requests.
@@ -1667,6 +1680,8 @@ spec:
                           - key
                           - secret
                           type: object
+                      required:
+                      - target
                       type: object
                     name:
                       description: Name used to refer to the output from a `pipeline`.
