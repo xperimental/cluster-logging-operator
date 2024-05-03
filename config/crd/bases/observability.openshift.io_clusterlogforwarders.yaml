@@ -709,6 +709,8 @@ spec:
                           - http
                           - syslog
                           type: string
+                      required:
+                      - port
                       type: object
                     type:
                       description: Type of output sink.
@@ -1101,8 +1103,10 @@ spec:
                               x-kubernetes-map-type: atomic
                           type: object
                         version:
+                          default: 8
                           description: 'Version specifies the version of Elasticsearch
                             to be used. Must be one of: 6-8, where 8 is the default'
+                          maximum: 8
                           minimum: 6
                           type: integer
                       type: object
@@ -1515,7 +1519,7 @@ spec:
                           description: Tuning specs tuning for the output
                           properties:
                             compression:
-                              default: none
+                              default: snappy
                               description: Compression causes data to be compressed
                                 before sending over the network.
                               enum:
