@@ -151,7 +151,7 @@ type URLSpec struct {
 
 // BaseOutputTuningSpec tuning parameters for an output
 type BaseOutputTuningSpec struct {
-	DeliverySpec `json:",inline"`
+	Delivery DeliveryMode `json:"delivery,omitempty"`
 
 	// MaxWrite limits the maximum payload in terms of bytes of a single "send" to the output.
 	//
@@ -178,19 +178,22 @@ type CompressionSpec struct {
 	Compression string `json:"compression,omitempty"`
 }
 
-type DeliverySpec struct {
-	// Delivery mode for log forwarding.
-	//
-	//  - AtLeastOnce (default): if the forwarder crashes or is re-started, any logs that were read before
-	//    the crash but not sent to their destination will be re-read and re-sent. Note it is possible
-	//    that some logs are duplicated in the event of a crash - log records are delivered at-least-once.
-	//  - AtMostOnce: The forwarder makes no effort to recover logs lost during a crash. This mode may give
-	//    better throughput, but could result in more log loss.
-	//
-	// +kubebuilder:validation:Enum:=AtLeastOnce;AtMostOnce
-	// +kubebuilder:default:=AtLeastOnce
-	Delivery string `json:"delivery,omitempty"`
-}
+// DeliveryMode sets the delivery mode for log forwarding.
+//
+//   - AtLeastOnce (default): if the forwarder crashes or is re-started, any logs that were read before
+//     the crash but not sent to their destination will be re-read and re-sent. Note it is possible
+//     that some logs are duplicated in the event of a crash - log records are delivered at-least-once.
+//   - AtMostOnce: The forwarder makes no effort to recover logs lost during a crash. This mode may give
+//     better throughput, but could result in more log loss.
+//
+// +kubebuilder:validation:Enum:=atLeastOnce;atMostOnce
+// +kubebuilder:default:=atLeastOnce
+type DeliveryMode string
+
+const (
+	DeliveryModeAtLeastOnce DeliveryMode = "atLeastOnce"
+	DeliveryModeAtMostOnce  DeliveryMode = "atMostOnce"
+)
 
 // OutputTypeSpec is a union of optional additional configuration specific to an
 // output type. The fields of this struct define the set of known output types.
@@ -341,7 +344,6 @@ type Cloudwatch struct {
 	// GroupBy defines the strategy for grouping logstreams
 	//
 	// +required
-	// +kubebuilder:validation:Enum:=logType;namespaceName;namespaceUUID
 	GroupBy LogGroupByType `json:"groupBy,omitempty"`
 
 	// GroupPrefix Add this prefix to all group names.
@@ -354,6 +356,8 @@ type Cloudwatch struct {
 }
 
 // LogGroupByType defines a fixed strategy type
+//
+// +kubebuilder:validation:Enum:=logType;namespaceName;namespaceUUID
 type LogGroupByType string
 
 const (
@@ -474,7 +478,7 @@ type HTTP struct {
 }
 
 type KafkaTuningSpec struct {
-	DeliverySpec `json:",inline"`
+	Delivery DeliveryMode `json:"delivery,omitempty"`
 
 	// MaxWrite limits the maximum payload in terms of bytes of a single "send" to the output.
 	//

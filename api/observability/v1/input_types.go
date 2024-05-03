@@ -15,19 +15,34 @@ limitations under the License.
 package v1
 
 import (
-	"github.com/openshift/cluster-logging-operator/internal/utils/sets"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// InputType specifies the type of log input to create.
+//
+// +kubebuilder:validation:Enum:=audit;application;infrastructure;receiver
+type InputType string
+
 // Reserved input names.
 const (
-	InputNameApplication    = "application"    // Non-infrastructure container logs.
-	InputNameInfrastructure = "infrastructure" // Infrastructure containers and system logs.
-	InputNameAudit          = "audit"          // System audit logs.
-	InputNameReceiver       = "receiver"       // Receiver to receive logs from non-cluster sources.
+	// InputTypeApplication contains all the non-infrastructure container logs.
+	InputTypeApplication InputType = "application"
+	// InputTypeInfrastructure contains infrastructure containers and system logs.
+	InputTypeInfrastructure InputType = "infrastructure"
+	// InputTypeAudit contains system audit logs.
+	InputTypeAudit InputType = "audit"
+	// InputTypeReceiver defines a network receiver for receiving logs from non-cluster sources.
+	InputTypeReceiver InputType = "receiver"
 )
 
-var ReservedInputNames = sets.NewString(InputNameApplication, InputNameInfrastructure, InputNameAudit, InputNameReceiver)
+var (
+	InputTypes = []InputType{
+		InputTypeApplication,
+		InputTypeInfrastructure,
+		InputTypeAudit,
+		InputTypeReceiver,
+	}
+)
 
 // InputSpec defines a selector of log messages for a given log type.
 type InputSpec struct {
@@ -39,9 +54,8 @@ type InputSpec struct {
 
 	// Type of output sink.
 	//
-	// +kubebuilder:validation:Enum:=application;audit;infrastructure;receiver
 	// +required
-	Type string `json:"type,omitempty"`
+	Type InputType `json:"type"`
 
 	// NOTE: the following fields in this struct are deliberately _not_ `omitempty`.
 	// An empty field means enable that input type with no filter.
@@ -131,6 +145,27 @@ type NamespaceContainerSpec struct {
 	Container string `json:"container,omitempty"`
 }
 
+// InfrastructureSource defines the type of infrastructure log source to use.
+//
+// +kubebuilder:validation:Enum:=container;node
+type InfrastructureSource string
+
+const (
+	// InfrastructureSourceNode are journald logs from the node
+	InfrastructureSourceNode InfrastructureSource = "node"
+
+	// InfrastructureSourceContainer are container logs from workloads deployed
+	// in any of the following namespaces: default, kube*, openshift*
+	InfrastructureSourceContainer InfrastructureSource = "container"
+)
+
+var (
+	InfrastructureSources = []InfrastructureSource{
+		InfrastructureSourceNode,
+		InfrastructureSourceContainer,
+	}
+)
+
 // Infrastructure enables infrastructure logs.
 // Sources of these logs:
 // * container workloads deployed to namespaces: default, kube*, openshift*
@@ -139,66 +174,73 @@ type Infrastructure struct {
 	// Sources defines the list of infrastructure sources to collect.
 	// This field is optional and omission results in the collection of all infrastructure sources.
 	//
-	// Valid sources are: node, container
-	//
 	// +optional
-	Sources []string `json:"sources,omitempty"`
+	Sources []InfrastructureSource `json:"sources,omitempty"`
 }
 
-const (
-	// InfrastructureSourceNode are journald logs from the node
-	InfrastructureSourceNode string = "node"
+// AuditSource defines which type of audit log source is used.
+//
+// +kubebuilder:validation:Enum:=auditd;kubeAPI;openshiftAPI;ovn
+type AuditSource string
 
-	// InfrastructureSourceContainer are container logs from workloads deployed
-	// in any of the following namespaces: default, kube*, openshift*
-	InfrastructureSourceContainer string = "container"
+const (
+	// AuditSourceKube are audit logs from kubernetes API servers
+	AuditSourceKube AuditSource = "kubeAPI"
+
+	// AuditSourceOpenShift are audit logs from OpenShift API servers
+	AuditSourceOpenShift AuditSource = "openshiftAPI"
+
+	// AuditSourceAuditd are audit logs from a node auditd service
+	AuditSourceAuditd AuditSource = "auditd"
+
+	// AuditSourceOVN are audit logs from an Open Virtual Network service
+	AuditSourceOVN AuditSource = "ovn"
 )
 
-var InfrastructureSources = sets.NewString(InfrastructureSourceNode, InfrastructureSourceContainer)
+var (
+	AuditSources = []AuditSource{
+		AuditSourceKube,
+		AuditSourceOpenShift,
+		AuditSourceAuditd,
+		AuditSourceOVN,
+	}
+)
 
 // Audit enables audit logs. Filtering may be added in future.
 type Audit struct {
 	// Sources defines the list of audit sources to collect.
 	// This field is optional and its exclusion results in the collection of all audit sources.
-	// Valid sources are: kubeAPI, openshiftAPI, auditd, ovn
 	//
 	// +optional
-	Sources []string `json:"sources,omitempty"`
+	Sources []AuditSource `json:"sources,omitempty"`
 }
 
-const (
-	// AuditSourceKube are audit logs from kubernetes API servers
-	AuditSourceKube string = "kubeAPI"
-
-	// AuditSourceOpenShift are audit logs from OpenShift API servers
-	AuditSourceOpenShift string = "openshiftAPI"
-
-	// AuditSourceAuditd are audit logs from a node auditd service
-	AuditSourceAuditd string = "auditd"
-
-	// AuditSourceOVN are audit logs from an Open Virtual Network service
-	AuditSourceOVN string = "ovn"
-)
-
-var AuditSources = sets.NewString(AuditSourceKube, AuditSourceOpenShift, AuditSourceAuditd, AuditSourceOVN)
+// ReceiverType specifies the type of receiver that should be created.
+//
+// +kubebuilder:validation:Enum:=http;syslog
+type ReceiverType string
 
 const (
-	ReceiverTypeHttp   = "http"
-	ReceiverTypeSyslog = "syslog"
+	ReceiverTypeHttp   ReceiverType = "http"
+	ReceiverTypeSyslog ReceiverType = "syslog"
 
 	// InputReceiverFormatKubeAPIAudit Log events in k8s list format, e.g. API audit log events.
 	InputReceiverFormatKubeAPIAudit = "kubeAPIAudit"
 )
 
-var ReservedInputReceiverNames = sets.NewString(ReceiverTypeHttp, ReceiverTypeSyslog)
+var (
+	ReceiverTypes = []ReceiverType{
+		ReceiverTypeHttp,
+		ReceiverTypeSyslog,
+	}
+)
 
 // ReceiverSpec is a union of input Receiver types.
 type ReceiverSpec struct {
 	// Type of Receiver plugin.
 	//
-	// +kubebuilder:validation:Enum:=http;syslog
 	// +required
-	Type string `json:"type,omitempty"`
+	Type ReceiverType `json:"type,omitempty"`
 
 	// TLS contains settings for controlling options of TLS connections.
 	//
@@ -218,13 +260,21 @@ type ReceiverSpec struct {
 	HTTP *HTTPReceiver `json:"http,omitempty"`
 }
 
+// HTTPReceiverFormat defines the type of log data incoming through the HTTP receiver.
+//
+// +kubebuilder:validation:Enum:=kubeAPIAudit
+type HTTPReceiverFormat string
+
+const (
+	HTTPReceiverFormatKubeAPIAudit HTTPReceiverFormat = "kubeAPIAudit"
+)
+
 // HTTPReceiver receives encoded logs as a HTTP endpoint.
 type HTTPReceiver struct {
 	// Format is the format of incoming log data.
 	//
-	// +kubebuilder:validation:Enum:=kubeAPIAudit
 	// +required
-	Format string `json:"format"`
+	Format HTTPReceiverFormat `json:"format"`
 }
 
 // InputTLSSpec contains options for TLS connections that are agnostic to the input type.
