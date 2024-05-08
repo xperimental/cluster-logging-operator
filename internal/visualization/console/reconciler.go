@@ -8,23 +8,18 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/yaml"
 
-	log "github.com/ViaQ/logerr/v2/log/static"
 	consolev1alpha1 "github.com/openshift/api/console/v1alpha1"
 	logging "github.com/openshift/cluster-logging-operator/api/logging/v1"
 	"github.com/openshift/cluster-logging-operator/internal/constants"
-	"github.com/openshift/cluster-logging-operator/internal/logstore/lokistack"
 	"github.com/openshift/cluster-logging-operator/internal/runtime"
 	"github.com/openshift/cluster-logging-operator/internal/utils"
 	appv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metaerrors "k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	utilerrors "k8s.io/apimachinery/pkg/util/errors"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
-	"k8s.io/client-go/util/retry"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
@@ -70,59 +65,14 @@ func ConsoleCapabilityEnabled(c client.Client, plugin consolev1alpha1.ConsolePlu
 
 // Reconcile creates or updates cluster objects to match config.
 func (r *Reconciler) Reconcile(ctx context.Context) error {
-	if !ConsoleCapabilityEnabled(r.c, r.consolePlugin) {
-		log.V(3).Info("Cluster console capability disabled.  Skipping logging console plugin reconciliation")
-		return nil
-	}
-
-	modified := false
-	// Call CreateOrUpdate for each object.
-	err := r.each(func(m mutable) error {
-		return retry.RetryOnConflict(retry.DefaultBackoff, func() error {
-			result, err := controllerutil.CreateOrUpdate(ctx, r.c, m.o, m.mutate)
-			if err == nil && result != controllerutil.OperationResultNone {
-				modified = true
-				log.V(2).Info("reconciled", "object", runtime.ID(m.o), "action", result)
-			}
-			return err
-		})
-	})
-	if err != nil {
-		log.Error(err, "reconciling console", "plugin", runtime.ID(&r.consolePlugin))
-		_ = r.Delete(ctx) // Clear out any partial setup
-		return err
-	}
-
-	rbacModified, err := lokistack.ReconcileLokiReadRoles(r.c)
-	if err != nil {
-		log.Error(err, "reconciling LokiStack RBAC for console", "plugin", runtime.ID(&r.consolePlugin))
-		return err
-	}
-
-	if modified || rbacModified {
-		log.Info("reconciled console", "plugin", runtime.ID(&r.consolePlugin))
-	}
+	// Do not reconcile console
 	return nil
 }
 
 // Delete the consoleplugin and related objects.
 func (r *Reconciler) Delete(ctx context.Context) error {
-	if !ConsoleCapabilityEnabled(r.c, r.consolePlugin) {
-		log.V(3).Info("Cluster console capability disabled.  Skipping logging console plugin deletion")
-		return nil
-	}
-	var errs []error // Collect errors, don't stop on first.
-	_ = r.each(func(m mutable) error {
-		err := r.c.Delete(ctx, m.o)
-		if err != nil && !apierrors.IsNotFound(err) {
-			errs = append(errs, err)
-			log.Error(err, "deleting console", "object", runtime.ID(m.o))
-		}
-		return nil // Don't stop on first error.
-	})
-
-	errs = append(errs, lokistack.RemoveLokiReadRoles(r.c))
-	return utilerrors.NewAggregate(errs)
+	// Do not reconcile console
+	return nil
 }
 
 // each calls f for each object. Stops on first error and returns it.
