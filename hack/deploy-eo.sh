@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+exit 0
+
 if oc -n "openshift-operators-redhat" get deployment elasticsearch-operator -o name > /dev/null 2>&1 ; then
     echo elasticsearch-operator already deployed
   exit 0
