@@ -199,7 +199,20 @@ type BearerToken struct {
 	// a token for authenticating requests.
 	//
 	// +kubebuilder:validation:Optional
-	ServiceAccount *corev1.LocalObjectReference `json:"serviceAccount,omitempty"`
+	ServiceAccount *ServiceAccountToken `json:"serviceAccount,omitempty"`
+}
+
+type ServiceAccountToken struct {
+	// Enabled enables the use of the collector's service account to provide a token for authenticating requests.
+	//
+	// +kubebuilder:validation:Required
+	Enabled bool `json:"enabled"`
+
+	// Audience allows the customization of the OAuth audience used for issuing the token.
+	// If not set, "openshift" will be used as a default value.
+	//
+	// +kubebuilder:validation:Optional
+	Audience string `json:"audience"`
 }
 
 type BearerTokenSecretKey struct {

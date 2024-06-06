@@ -981,14 +981,20 @@ spec:
                                         be used for getting a token for authenticating
                                         requests.
                                       properties:
-                                        name:
-                                          description: 'Name of the referent. More
-                                            info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                            TODO: Add other useful fields. apiVersion,
-                                            kind, uid?'
+                                        audience:
+                                          description: Audience allows the customization
+                                            of the OAuth audience used for issuing
+                                            the token. If not set, "openshift" will
+                                            be used as a default value.
                                           type: string
+                                        enabled:
+                                          description: Enabled enables the use of
+                                            the collector's service account to provide
+                                            a token for authenticating requests.
+                                          type: boolean
+                                      required:
+                                      - enabled
                                       type: object
-                                      x-kubernetes-map-type: atomic
                                   type: object
                               type: object
                             type:
@@ -1119,14 +1125,20 @@ spec:
                                     the Kubernetes ServiceAccount that should be used
                                     for getting a token for authenticating requests.
                                   properties:
-                                    name:
-                                      description: 'Name of the referent. More info:
-                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                        TODO: Add other useful fields. apiVersion,
-                                        kind, uid?'
+                                    audience:
+                                      description: Audience allows the customization
+                                        of the OAuth audience used for issuing the
+                                        token. If not set, "openshift" will be used
+                                        as a default value.
                                       type: string
+                                    enabled:
+                                      description: Enabled enables the use of the
+                                        collector's service account to provide a token
+                                        for authenticating requests.
+                                      type: boolean
+                                  required:
+                                  - enabled
                                   type: object
-                                  x-kubernetes-map-type: atomic
                               type: object
                             username:
                               description: Username to use for authenticating requests.
@@ -1360,14 +1372,20 @@ spec:
                                     the Kubernetes ServiceAccount that should be used
                                     for getting a token for authenticating requests.
                                   properties:
-                                    name:
-                                      description: 'Name of the referent. More info:
-                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                        TODO: Add other useful fields. apiVersion,
-                                        kind, uid?'
+                                    audience:
+                                      description: Audience allows the customization
+                                        of the OAuth audience used for issuing the
+                                        token. If not set, "openshift" will be used
+                                        as a default value.
                                       type: string
+                                    enabled:
+                                      description: Enabled enables the use of the
+                                        collector's service account to provide a token
+                                        for authenticating requests.
+                                      type: boolean
+                                  required:
+                                  - enabled
                                   type: object
-                                  x-kubernetes-map-type: atomic
                               type: object
                             username:
                               description: Username to use for authenticating requests.
@@ -1651,14 +1669,20 @@ spec:
                                     the Kubernetes ServiceAccount that should be used
                                     for getting a token for authenticating requests.
                                   properties:
-                                    name:
-                                      description: 'Name of the referent. More info:
-                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                        TODO: Add other useful fields. apiVersion,
-                                        kind, uid?'
+                                    audience:
+                                      description: Audience allows the customization
+                                        of the OAuth audience used for issuing the
+                                        token. If not set, "openshift" will be used
+                                        as a default value.
                                       type: string
+                                    enabled:
+                                      description: Enabled enables the use of the
+                                        collector's service account to provide a token
+                                        for authenticating requests.
+                                      type: boolean
+                                  required:
+                                  - enabled
                                   type: object
-                                  x-kubernetes-map-type: atomic
                               type: object
                             username:
                               description: Username to use for authenticating requests.
@@ -1820,14 +1844,20 @@ spec:
                                     the Kubernetes ServiceAccount that should be used
                                     for getting a token for authenticating requests.
                                   properties:
-                                    name:
-                                      description: 'Name of the referent. More info:
-                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                                        TODO: Add other useful fields. apiVersion,
-                                        kind, uid?'
+                                    audience:
+                                      description: Audience allows the customization
+                                        of the OAuth audience used for issuing the
+                                        token. If not set, "openshift" will be used
+                                        as a default value.
                                       type: string
+                                    enabled:
+                                      description: Enabled enables the use of the
+                                        collector's service account to provide a token
+                                        for authenticating requests.
+                                      type: boolean
+                                  required:
+                                  - enabled
                                   type: object
-                                  x-kubernetes-map-type: atomic
                               type: object
                             username:
                               description: Username to use for authenticating requests.
