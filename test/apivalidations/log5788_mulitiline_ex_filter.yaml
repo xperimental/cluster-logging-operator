@@ -1,10 +1,3 @@
-apiVersion: v1
-kind: Secret
-metadata:
-  name: to-splunk-secret-54980
-data:
-  hecToken: dmFsdWUtMg0KDQo=
----
 apiVersion: observability.openshift.io/v1
 kind: ClusterLogForwarder
 metadata:
