@@ -481,7 +481,17 @@ spec:
                           type: array
                       type: object
                     type:
-                      description: Type of filter.
+                      description: |-
+                        Type of filter.
+
+                        Possible filter types are:
+
+                        1. detectMultilineException - Enables multi-line error detection of container logs. No additional configuration required.
+                        2. drop - Drop whole log records based on the evaluation of a set of regex tests. See field `drop` for configuration.
+                        3. kubeAPIAudit - Remove unwanted audit events and reduce event size to create a manageable audit trail. See field `kubeAPIaudit` for configuration.
+                        4. openshiftLabels - Labels to be applied to log records passing through a pipeline. See field `openshiftLabels` for configuration.
+                        5. parse - Enables parsing of log entries into structured logs. No additional configuration required.
+                        6. prune - Prune log record fields to reduce the size of logs flowing into a log store. See field `prune` for configuration.
                       enum:
                       - openshiftLabels
                       - detectMultilineException
@@ -683,7 +693,10 @@ spec:
                             endpoint.
                           properties:
                             format:
-                              description: Format is the format of incoming log data.
+                              description: |-
+                                Format is the format of incoming log data.
+
+                                The only currently supported format is `kubeAPIAudit`.
                               enum:
                               - kubeAPIAudit
                               type: string
@@ -791,7 +804,15 @@ spec:
                               type: object
                           type: object
                         type:
-                          description: Type of Receiver plugin.
+                          description: |-
+                            Type of Receiver plugin.
+
+                            Supported Receiver types are:
+
+                            1. http
+                               - Currently only supports kubernetes audit logs (log_type = "audit")
+                            2. syslog
+                               - Currently only supports node infrastucture logs (log_type = "infrastructure")
                           enum:
                           - http
                           - syslog
@@ -2067,8 +2088,9 @@ spec:
                           == ''Viaq'''
                       - message: '''snappy'' compression cannot be used when data
                           model is ''Otel'''
-                        rule: '!has(self.tuning) || self.tuning.compression != ''snappy''
-                          || !has(self.dataModel) || self.dataModel == ''Viaq'''
+                        rule: '!has(self.tuning) || !has(self.tuning.compression)
+                          || self.tuning.compression != ''snappy'' || !has(self.dataModel)
+                          || self.dataModel == ''Viaq'''
                     name:
                       description: Name used to refer to the output from a `pipeline`.
                       pattern: ^[a-z][a-z0-9-]*[a-z0-9]$
@@ -2344,8 +2366,15 @@ spec:
                           pattern: ^(([a-zA-Z0-9-_.\/])*(\{(\.[a-zA-Z0-9_]+|\."[^"]+")+((\|\|)(\.[a-zA-Z0-9_]+|\.?"[^"]+")+)*\|\|"[^"]*"\})*)*$
                           type: string
                         enrichment:
-                          description: Enrichment is an additional modification the
-                            log message before forwarding it to the receiver
+                          description: |-
+                            Enrichment is an additional modification to the log message before forwarding it to the receiver.
+
+                            Supported values are:
+                            1. None
+                               - Adds no additional enrichment to the record
+                            2. KubernetesMinimal
+                               - Adds namespace_name, pod_name, and container_name to the beginning of the message body (e.g. namespace_name=myproject, container_name=server, pod_name=pod-123, message={"foo":"bar"}).
+                            This may result in the message body being an invalid JSON structure.
                           enum:
                           - None
                           - KubernetesMinimal
@@ -2427,8 +2456,12 @@ spec:
                           pattern: ^(([a-zA-Z0-9-_.\/])*(\{(\.[a-zA-Z0-9_]+|\."[^"]+")+((\|\|)(\.[a-zA-Z0-9_]+|\.?"[^"]+")+)*\|\|"[^"]*"\})*)*$
                           type: string
                         rfc:
-                          description: SyslogRFCType sets which RFC the generated
-                            messages conform to.
+                          description: |-
+                            The RFC to which the generated messages conform to.
+
+                            Supported values are:
+                            1. RFC3164
+                            2. RFC5424
                           enum:
                           - RFC3164
                           - RFC5424

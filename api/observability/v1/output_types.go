@@ -782,7 +782,7 @@ type LokiStackAuthentication struct {
 
 // LokiStack provides optional extra properties for `type: lokistack`
 // +kubebuilder:validation:XValidation:rule="!has(self.labelKeys) || !has(self.dataModel) || self.dataModel == 'Viaq'", message="'labelKeys' cannot be set when data model is 'Otel'"
-// +kubebuilder:validation:XValidation:rule="!has(self.tuning) || self.tuning.compression != 'snappy' || !has(self.dataModel) || self.dataModel == 'Viaq'", message="'snappy' compression cannot be used when data model is 'Otel'"
+// +kubebuilder:validation:XValidation:rule="!has(self.tuning) || !has(self.tuning.compression) || self.tuning.compression != 'snappy' || !has(self.dataModel) || self.dataModel == 'Viaq'", message="'snappy' compression cannot be used when data model is 'Otel'"
 type LokiStack struct {
 	// Authentication sets credentials for authenticating the requests.
 	//
@@ -1074,6 +1074,12 @@ type Syslog struct {
 	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Destination URL",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}
 	URL string `json:"url"`
 
+	// The RFC to which the generated messages conform to.
+	//
+	// Supported values are:
+	// 1. RFC3164
+	// 2. RFC5424
+	//
 	// +kubebuilder:validation:Required
 	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Syslog RFC"
 	RFC SyslogRFCType `json:"rfc"`
@@ -1200,7 +1206,14 @@ type Syslog struct {
 	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="MSGID",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}
 	MsgId string `json:"msgId,omitempty"`
 
-	// Enrichment is an additional modification the log message before forwarding it to the receiver
+	// Enrichment is an additional modification to the log message before forwarding it to the receiver.
+	//
+	// Supported values are:
+	// 1. None
+	//    - Adds no additional enrichment to the record
+	// 2. KubernetesMinimal
+	//    - Adds namespace_name, pod_name, and container_name to the beginning of the message body (e.g. namespace_name=myproject, container_name=server, pod_name=pod-123, message={"foo":"bar"}).
+	// This may result in the message body being an invalid JSON structure.
 	//
 	// +kubebuilder:validation:Optional
 	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Enrichment Type",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}

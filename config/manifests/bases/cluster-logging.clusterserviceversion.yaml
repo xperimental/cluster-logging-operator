@@ -18,7 +18,7 @@ metadata:
     features.operators.openshift.io/token-auth-aws: "false"
     features.operators.openshift.io/token-auth-azure: "false"
     features.operators.openshift.io/token-auth-gcp: "false"
-    olm.skipRange: '>=6.0.0-0 <6.2.0'
+    olm.skipRange: '>=6.1.0-0 <6.3.0'
     operatorframework.io/cluster-monitoring: "true"
     operatorframework.io/initialization-resource: |
       {
@@ -192,7 +192,19 @@ spec:
           NOTE2: If this filter is used in a pipeline with GoogleCloudLogging, `.hostname` MUST be added to this list as it is a required field.
         displayName: Fields to be kept
         path: filters[0].prune.notIn
-      - description: Type of filter.
+      - description: |-
+          Type of filter.
+
+
+          Possible filter types are:
+
+
+          1. detectMultilineException - Enables multi-line error detection of container logs. No additional configuration required.
+          2. drop - Drop whole log records based on the evaluation of a set of regex tests. See field `drop` for configuration.
+          3. kubeAPIAudit - Remove unwanted audit events and reduce event size to create a manageable audit trail. See field `kubeAPIaudit` for configuration.
+          4. openshiftLabels - Labels to be applied to log records passing through a pipeline. See field `openshiftLabels` for configuration.
+          5. parse - Enables parsing of log entries into structured logs. No additional configuration required.
+          6. prune - Prune log record fields to reduce the size of logs flowing into a log store. See field `prune` for configuration.
         displayName: Filter Type
         path: filters[0].type
       - description: |-
@@ -303,7 +315,11 @@ spec:
         path: inputs[0].receiver
       - displayName: HTTP Receiver Configuration
         path: inputs[0].receiver.http
-      - description: Format is the format of incoming log data.
+      - description: |-
+          Format is the format of incoming log data.
+
+
+          The only currently supported format is `kubeAPIAudit`.
         displayName: Data Format
         path: inputs[0].receiver.http.format
       - description: Port the Receiver listens on. It must be a value between 1024
@@ -321,7 +337,17 @@ spec:
           the collector. The collector is configured to use the public and private key provided by the service
         displayName: TLS Options
         path: inputs[0].receiver.tls
-      - description: Type of Receiver plugin.
+      - description: |-
+          Type of Receiver plugin.
+
+
+          Supported Receiver types are:
+
+
+          1. http
+             - Currently only supports kubernetes audit logs (log_type = "audit")
+          2. syslog
+             - Currently only supports node infrastucture logs (log_type = "infrastructure")
         displayName: Receiver Type
         path: inputs[0].receiver.type
       - description: Type of output sink.
@@ -1522,8 +1548,16 @@ spec:
         path: outputs[0].syslog.appName
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Enrichment is an additional modification the log message before
-          forwarding it to the receiver
+      - description: |-
+          Enrichment is an additional modification to the log message before forwarding it to the receiver.
+
+
+          Supported values are:
+          1. None
+             - Adds no additional enrichment to the record
+          2. KubernetesMinimal
+             - Adds namespace_name, pod_name, and container_name to the beginning of the message body (e.g. namespace_name=myproject, container_name=server, pod_name=pod-123, message={"foo":"bar"}).
+          This may result in the message body being an invalid JSON structure.
         displayName: Enrichment Type
         path: outputs[0].syslog.enrichment
         x-descriptors:
@@ -1634,7 +1668,14 @@ spec:
         path: outputs[0].syslog.procId
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - displayName: Syslog RFC
+      - description: |-
+          The RFC to which the generated messages conform to.
+
+
+          Supported values are:
+          1. RFC3164
+          2. RFC5424
+        displayName: Syslog RFC
         path: outputs[0].syslog.rfc
       - description: |-
           Severity to set on outgoing syslog records.
@@ -1920,4 +1961,4 @@ spec:
   minKubeVersion: 1.18.3
   provider:
     name: Red Hat
-  version: 6.2.0
+  version: 6.3.0
