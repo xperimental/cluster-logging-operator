@@ -401,7 +401,7 @@ BUNDLE_IMAGE ?= $(REPOSITORY_BASE)-bundle:$(OLM_VERSION)
 .PHONY: olm-custom-version
 olm-custom-version: $(KUSTOMIZE)
 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(OPERATOR_IMAGE)
-	$(MAKE) bundle VERSION=$(OLM_VERSION)
+	$(MAKE) bundle VERSION=$(OLM_VERSION) CHANNEL=fast
 
 .PHONY: olm-bundle-build
 olm-bundle-build: olm-custom-version
