@@ -393,7 +393,7 @@ cluster-logging-operator-uninstall:
 
 REGISTRY_BASE ?= $(error REGISTRY_BASE needs to be set for the olm- targets to work)
 REPOSITORY_BASE ?= $(REGISTRY_BASE)/cluster-logging-operator
-DEV_VERSION := 0.0.1$(shell date +%m%d%H%M)-$(shell git rev-parse --short HEAD)
+DEV_VERSION := $(VERSION)-$(shell date +"%Y%m%d%H%M%S")-$(SHA_COMMIT)
 OLM_VERSION ?= $(DEV_VERSION)
 OPERATOR_IMAGE ?= $(REPOSITORY_BASE):$(OLM_VERSION)
 BUNDLE_IMAGE ?= $(REPOSITORY_BASE)-bundle:$(OLM_VERSION)
