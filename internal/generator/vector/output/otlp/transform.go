@@ -1,8 +1,10 @@
 package otlp
 
 import (
+	"fmt"
 	"strings"
 
+	obs "github.com/openshift/cluster-logging-operator/api/observability/v1"
 	. "github.com/openshift/cluster-logging-operator/internal/generator/framework"
 	"github.com/openshift/cluster-logging-operator/internal/generator/vector/elements"
 	"github.com/openshift/cluster-logging-operator/internal/generator/vector/helpers"
@@ -10,23 +12,6 @@ import (
 
 // VRL for OTLP transforms by route
 const (
-	BaseResourceAttributes = `
-# Create base resource attributes
-resource.attributes = []
-resource.attributes = append(resource.attributes,
-  [
-    {"key": "openshift.cluster.uid", "value": {"stringValue": .openshift.cluster_id}},
-    {"key": "openshift.log.source", "value": {"stringValue": .log_source}},
-    {"key": "openshift.log.type", "value": {"stringValue": .log_type}},
-    {"key": "k8s.node.name", "value": {"stringValue": .hostname}}
-  ]
-)
-if exists(.openshift.labels) {for_each(object!(.openshift.labels)) -> |key,value| {
-    resource.attributes = append(resource.attributes,
-        [{"key": "openshift.label." + key, "value": {"stringValue": value}}]
-    )
-}}
-`
 	ContainerResourceAttributes = `
 resource.attributes = append( resource.attributes,
   [
@@ -166,9 +151,37 @@ resource.attributes = append( resource.attributes,
 `
 )
 
-func containerLogsVRL() string {
+func baseResourceAttributes(spec *obs.OTLP) string {
+	baseAttributes := []string{
+		`{"key": "openshift.cluster.uid", "value": {"stringValue": .openshift.cluster_id}}`,
+		`{"key": "openshift.log.source", "value": {"stringValue": .log_source}}`,
+		`{"key": "openshift.log.type", "value": {"stringValue": .log_type}}`,
+		`{"key": "k8s.node.name", "value": {"stringValue": .hostname}}`,
+	}
+
+	if ca := spec.CustomAttributes; ca != nil {
+		for _, ra := range ca.ResourceAttributes {
+			baseAttributes = append(baseAttributes, fmt.Sprintf(`{"key": %q, "value": {"stringValue": %q}}`, ra.Name, ra.StaticValue.StringValue))
+		}
+	}
+
+	return `# Create base resource attributes
+resource.attributes = []
+resource.attributes = append(resource.attributes,
+  [
+` + strings.Join(baseAttributes, ",\n") + `
+]
+)
+if exists(.openshift.labels) {for_each(object!(.openshift.labels)) -> |key,value| {
+    resource.attributes = append(resource.attributes,
+        [{"key": "openshift.label." + key, "value": {"stringValue": value}}]
+    )
+}}`
+}
+
+func containerLogsVRL(spec *obs.OTLP) string {
 	return strings.Join(helpers.TrimSpaces([]string{
-		BaseResourceAttributes,
+		baseResourceAttributes(spec),
 		ContainerResourceAttributes,
 		BackwardCompatBaseResourceAttributes,
 		BackwardCompatContainerResourceAttributes,
@@ -181,9 +194,9 @@ func containerLogsVRL() string {
 	}), "\n")
 }
 
-func nodeLogsVRL() string {
+func nodeLogsVRL(spec *obs.OTLP) string {
 	return strings.Join(helpers.TrimSpaces([]string{
-		BaseResourceAttributes,
+		baseResourceAttributes(spec),
 		BackwardCompatBaseResourceAttributes,
 		NodeResourceAttributes,
 		LogRecord,
@@ -195,9 +208,9 @@ func nodeLogsVRL() string {
 	}), "\n")
 }
 
-func auditHostLogsVRL() string {
+func auditHostLogsVRL(spec *obs.OTLP) string {
 	return strings.Join(helpers.TrimSpaces([]string{
-		BaseResourceAttributes,
+		baseResourceAttributes(spec),
 		BackwardCompatBaseResourceAttributes,
 		LogRecord,
 		BodyFromInternal,
@@ -207,9 +220,9 @@ func auditHostLogsVRL() string {
 	}), "\n")
 }
 
-func auditAPILogsVRL() string {
+func auditAPILogsVRL(spec *obs.OTLP) string {
 	return strings.Join(helpers.TrimSpaces([]string{
-		BaseResourceAttributes,
+		baseResourceAttributes(spec),
 		BackwardCompatBaseResourceAttributes,
 		LogRecord,
 		BodyFromInternal,
@@ -218,9 +231,9 @@ func auditAPILogsVRL() string {
 	}), "\n")
 }
 
-func auditOVNLogsVRL() string {
+func auditOVNLogsVRL(spec *obs.OTLP) string {
 	return strings.Join(helpers.TrimSpaces([]string{
-		BaseResourceAttributes,
+		baseResourceAttributes(spec),
 		BackwardCompatBaseResourceAttributes,
 		LogRecord,
 		BodyFromInternal,
@@ -230,55 +243,55 @@ func auditOVNLogsVRL() string {
 	}), "\n")
 }
 
-func TransformContainer(id string, inputs []string) Element {
+func TransformContainer(id string, inputs []string, spec *obs.OTLP) Element {
 	return elements.Remap{
 		Desc:        "Normalize container log records to OTLP semantic conventions",
 		ComponentID: id,
 		Inputs:      helpers.MakeInputs(inputs...),
-		VRL:         containerLogsVRL(),
+		VRL:         containerLogsVRL(spec),
 	}
 }
 
-func TransformJournal(id string, inputs []string) Element {
+func TransformJournal(id string, inputs []string, spec *obs.OTLP) Element {
 	return elements.Remap{
 		Desc:        "Normalize node log events to OTLP semantic conventions",
 		ComponentID: id,
 		Inputs:      helpers.MakeInputs(inputs...),
-		VRL:         nodeLogsVRL(),
+		VRL:         nodeLogsVRL(spec),
 	}
 }
 
-func TransformAuditHost(id string, inputs []string) Element {
+func TransformAuditHost(id string, inputs []string, spec *obs.OTLP) Element {
 	return elements.Remap{
 		Desc:        "Normalize audit log record to OTLP semantic conventions",
 		ComponentID: id,
 		Inputs:      helpers.MakeInputs(inputs...),
-		VRL:         auditHostLogsVRL(),
+		VRL:         auditHostLogsVRL(spec),
 	}
 }
 
-func TransformAuditKube(id string, inputs []string) Element {
+func TransformAuditKube(id string, inputs []string, spec *obs.OTLP) Element {
 	return elements.Remap{
 		Desc:        "Normalize audit log kube record to OTLP semantic conventions",
 		ComponentID: id,
 		Inputs:      helpers.MakeInputs(inputs...),
-		VRL:         auditAPILogsVRL(),
+		VRL:         auditAPILogsVRL(spec),
 	}
 }
-func TransformAuditOpenshift(id string, inputs []string) Element {
+func TransformAuditOpenshift(id string, inputs []string, spec *obs.OTLP) Element {
 	return elements.Remap{
 		Desc:        "Normalize audit openshiftAPI record to OTLP semantic conventions",
 		ComponentID: id,
 		Inputs:      helpers.MakeInputs(inputs...),
-		VRL:         auditAPILogsVRL(),
+		VRL:         auditAPILogsVRL(spec),
 	}
 }
-func TransformAuditOvn(id string, inputs []string) Element {
+func TransformAuditOvn(id string, inputs []string, spec *obs.OTLP) Element {
 	return elements.Remap{
 		Desc:        "Normalize audit log ovn records to OTLP semantic conventions",
 		ComponentID: id,
 		Inputs:      helpers.MakeInputs(inputs...),
-		VRL:         auditOVNLogsVRL(),
+		VRL:         auditOVNLogsVRL(spec),
 	}
 }
 
