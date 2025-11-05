@@ -1374,6 +1374,40 @@ type OTLPTuningSpec struct {
 	Compression string `json:"compression,omitempty"`
 }
 
+// OTLPAttributeValue defines an attribute value in one of the supported types.
+type OTLPAttributeValue struct {
+	// StringValue defines a string as value.
+	//
+	// +kubebuilder:validation:Required
+	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="String Value",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}
+	StringValue string `json:"stringValue"`
+}
+
+// OTLPAttribute defines the name and value of a single custom attribute.
+type OTLPAttribute struct {
+	// Name contains the name of the attribute.
+	//
+	// +kubebuilder:validation:Required
+	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Name",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}
+	Name string `json:"name"`
+
+	// StaticValue defines a static value for the attribute.
+	//
+	// +kubebuilder:validation:Required
+	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Static value",xDescriptors={"urn:alm:descriptor:com.tectonic.ui:text"}
+	StaticValue OTLPAttributeValue `json:"staticValue"`
+}
+
+// OTLPCustomAttributesSpec contains the options for defining custom attributes on an OTLP output.
+type OTLPCustomAttributesSpec struct {
+	// ResourceAttributes contains a list of attributes that should be set as resource attributes.
+	//
+	// +nullable
+	// +kubebuilder:validation:Optional
+	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Resource Attributes"
+	ResourceAttributes []OTLPAttribute `json:"resourceAttributes,omitempty"`
+}
+
 // OTLP defines configuration for sending logs via OTLP using OTEL semantic conventions
 // https://opentelemetry.io/docs/specs/otlp/#otlphttp
 type OTLP struct {
@@ -1402,6 +1436,13 @@ type OTLP struct {
 	// +kubebuilder:validation:Optional
 	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Tuning Options"
 	Tuning *OTLPTuningSpec `json:"tuning,omitempty"`
+
+	// CustomAttributes allows setting custom OTLP attributes. Currently only resource attributes are supported.
+	//
+	// +nullable
+	// +kubebuilder:validation:Optional
+	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Custom Attributes"
+	CustomAttributes *OTLPCustomAttributesSpec `json:"customAttributes,omitempty"`
 }
 
 type S3TuningSpec struct {

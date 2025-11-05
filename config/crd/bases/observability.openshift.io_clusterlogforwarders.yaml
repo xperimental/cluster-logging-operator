@@ -3166,6 +3166,39 @@ spec:
                               - secretName
                               type: object
                           type: object
+                        customAttributes:
+                          description: CustomAttributes allows setting custom OTLP
+                            attributes. Currently only resource attributes are supported.
+                          nullable: true
+                          properties:
+                            resourceAttributes:
+                              description: ResourceAttributes contains a list of attributes
+                                that should be set as resource attributes.
+                              items:
+                                description: OTLPAttribute defines the name and value
+                                  of a single custom attribute.
+                                properties:
+                                  name:
+                                    description: Name contains the name of the attribute.
+                                    type: string
+                                  staticValue:
+                                    description: StaticValue defines a static value
+                                      for the attribute.
+                                    properties:
+                                      stringValue:
+                                        description: StringValue defines a string
+                                          as value.
+                                        type: string
+                                    required:
+                                    - stringValue
+                                    type: object
+                                required:
+                                - name
+                                - staticValue
+                                type: object
+                              nullable: true
+                              type: array
+                          type: object
                         tuning:
                           description: Tuning specs tuning for the output
                           nullable: true

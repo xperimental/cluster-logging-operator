@@ -82,7 +82,7 @@ metadata:
     categories: OpenShift Optional, Logging & Tracing, Observability
     certified: "false"
     containerImage: quay.io/openshift-logging/cluster-logging-operator:latest
-    createdAt: "2025-10-27T15:33:17Z"
+    createdAt: "2025-11-05T12:40:05Z"
     description: The Red Hat OpenShift Logging Operator for OCP provides a means for
       configuring and managing log collection and forwarding.
     features.operators.openshift.io/cnf: "false"
@@ -1416,6 +1416,29 @@ spec:
           value.
         displayName: Secret Name
         path: outputs[0].otlp.authentication.username.secretName
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: CustomAttributes allows setting custom OTLP attributes. Currently
+          only resource attributes are supported.
+        displayName: Custom Attributes
+        path: outputs[0].otlp.customAttributes
+      - description: ResourceAttributes contains a list of attributes that should
+          be set as resource attributes.
+        displayName: Resource Attributes
+        path: outputs[0].otlp.customAttributes.resourceAttributes
+      - description: Name contains the name of the attribute.
+        displayName: Name
+        path: outputs[0].otlp.customAttributes.resourceAttributes[0].name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: StaticValue defines a static value for the attribute.
+        displayName: Static value
+        path: outputs[0].otlp.customAttributes.resourceAttributes[0].staticValue
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: StringValue defines a string as value.
+        displayName: String Value
+        path: outputs[0].otlp.customAttributes.resourceAttributes[0].staticValue.stringValue
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       - description: Tuning specs tuning for the output
